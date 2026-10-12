@@ -1,0 +1,47 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Python Virtual Environments
+.venv/
+venv/
+env/
+ENV/
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.production
+
+# Database Files
+*.db
+*.sqlite
+*.sqlite3
+
+# Node.js / Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Media Storage
+storage/media/*
+storage/snapshots/*
+storage/transcripts/*
+!storage/media/.gitkeep
+!storage/snapshots/.gitkeep
+!storage/transcripts/.gitkeep
+
+# IDE & OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
