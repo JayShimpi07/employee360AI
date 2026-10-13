@@ -182,12 +182,12 @@ erDiagram
 - [x] Establish initial Seed Data generator (synthetic jobs, candidates, mock employees, knowledge base docs).
 
 ### Phase 2: First Working Hiring Interview (Voice & Conversation Engine)
-- [ ] Candidate Interview Portal: Camera & Microphone hardware check, consent agreement screen.
-- [ ] WebSocket streaming pipeline: bidirectional PCM/WAV audio streaming.
-- [ ] STT Integration with `faster-whisper` and latency measurement.
-- [ ] Contextual Turn Orchestrator: manages conversation history, system prompts, and next-question generation.
-- [ ] Audio response streaming via low-latency TTS.
-- [ ] Transcript persistence and session completion lifecycle.
+- [x] Candidate Interview Portal: Camera & Microphone hardware check, consent agreement screen.
+- [x] WebSocket streaming pipeline: bidirectional PCM/WAV audio streaming.
+- [x] STT Integration with `faster-whisper` and latency measurement.
+- [x] Contextual Turn Orchestrator: manages conversation history, system prompts, and next-question generation.
+- [x] Audio response streaming via low-latency TTS.
+- [x] Transcript persistence and session completion lifecycle.
 
 ### Phase 3: Agent Intelligence & Evidence Sufficiency Engine
 - [ ] RAG Pipeline: Ingest HR policies and JDs, chunking, embedding generation, pgvector cosine search.

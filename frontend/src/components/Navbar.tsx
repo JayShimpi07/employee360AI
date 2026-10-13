@@ -5,8 +5,8 @@ interface NavbarProps {
   currentUser: User | null;
   onOpenLogin: () => void;
   onLogout: () => void;
-  activeTab: 'dashboard' | 'studio';
-  setActiveTab: (tab: 'dashboard' | 'studio') => void;
+  activeTab: 'dashboard' | 'studio' | 'interview';
+  setActiveTab: (tab: 'dashboard' | 'studio' | 'interview') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -95,6 +95,22 @@ export const Navbar: React.FC<NavbarProps> = ({
           }}
         >
           Agent Configuration Studio
+        </button>
+        <button
+          onClick={() => setActiveTab('interview')}
+          style={{
+            background: activeTab === 'interview' ? 'var(--gradient-brand)' : 'transparent',
+            color: activeTab === 'interview' ? '#ffffff' : 'var(--text-muted)',
+            border: 'none',
+            borderRadius: '8px',
+            padding: '8px 18px',
+            fontWeight: 600,
+            fontSize: '0.88rem',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          Candidate Interview Portal 🎙️
         </button>
       </div>
 

@@ -57,18 +57,18 @@ To enable rapid iteration and eliminate containerization friction for the team, 
 ---
 
 ### Phase 2: First Working Hiring Interview (Voice Engine & Turn Loop)
-* [ ] Candidate Interview Portal UI:
+* [x] Candidate Interview Portal UI:
   - System checks for camera and microphone permissions.
   - Candidate consent agreement screen.
-* [ ] High-speed WebSocket streaming connection (`/ws/v1/interview/{session_id}`).
-* [ ] Integrate STT pipeline:
+* [x] High-speed WebSocket streaming connection (`/ws/v1/interview/{session_id}`).
+* [x] Integrate STT pipeline:
   - Audio chunk ingestion $\to$ streaming speech-to-text via `faster-whisper`.
-* [ ] Turn-taking orchestrator:
+* [x] Turn-taking orchestrator:
   - Voice Activity Detection (VAD) for turn completion detection.
   - Prompt orchestrator for next-question generation.
-* [ ] Integrate low-latency TTS:
+* [x] Integrate low-latency TTS:
   - Stream synthesized audio back to candidate browser.
-* [ ] Persist conversation transcripts and turn latencies to database.
+* [x] Persist conversation transcripts and turn latencies to database.
 
 **Definition of Done (Phase 2):**
 1. A candidate can open an invite link in a browser, grant mic permissions, and conduct a full spoken voice interview.

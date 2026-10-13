@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { WorkflowStudio } from './components/WorkflowStudio';
+import { CandidateInterview } from './components/CandidateInterview';
 import { LoginModal } from './components/LoginModal';
 import { api, getStoredToken, setStoredToken } from './api';
 import { User } from './types';
@@ -9,9 +10,21 @@ import { User } from './types';
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio' | 'interview'>('dashboard');
+  const [interviewToken, setInterviewToken] = useState<string>('');
+  const [interviewEmail, setInterviewEmail] = useState<string>('');
 
   useEffect(() => {
+    // Check URL parameters for candidate interview invite link
+    const params = new URLSearchParams(window.location.search);
+    const tokenParam = params.get('token');
+    const emailParam = params.get('email');
+    if (tokenParam && emailParam) {
+      setInterviewToken(tokenParam);
+      setInterviewEmail(emailParam);
+      setActiveTab('interview');
+    }
+
     const token = getStoredToken();
     if (token) {
       api.getMe()
@@ -41,8 +54,14 @@ export const App: React.FC = () => {
       <main style={{ flex: 1 }}>
         {activeTab === 'dashboard' ? (
           <Dashboard onOpenStudio={() => setActiveTab('studio')} />
-        ) : (
+        ) : activeTab === 'studio' ? (
           <WorkflowStudio />
+        ) : (
+          <CandidateInterview
+            initialToken={interviewToken}
+            initialEmail={interviewEmail}
+            onExit={() => setActiveTab('dashboard')}
+          />
         )}
       </main>
 

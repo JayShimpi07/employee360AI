@@ -4,6 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from backend.core.config import settings
 from backend.core.database import init_db
 from backend.api.api_router import api_router
+from backend.api.ws.interview_socket import ws_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -33,8 +34,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include v1 API routes
+# Include v1 API routes & WebSocket routes
 app.include_router(api_router)
+app.include_router(ws_router)
 
 @app.get("/", tags=["Root"])
 async def root():
