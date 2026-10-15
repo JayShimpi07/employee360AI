@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { Dashboard } from './components/Dashboard';
 import { WorkflowStudio } from './components/WorkflowStudio';
 import { CandidateInterview } from './components/CandidateInterview';
+import { EvidenceDecisionCenter } from './components/EvidenceDecisionCenter';
 import { LoginModal } from './components/LoginModal';
 import { api, getStoredToken, setStoredToken } from './api';
 import { User } from './types';
@@ -10,7 +11,7 @@ import { User } from './types';
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio' | 'interview'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio' | 'interview' | 'evidence'>('dashboard');
   const [interviewToken, setInterviewToken] = useState<string>('');
   const [interviewEmail, setInterviewEmail] = useState<string>('');
 
@@ -56,6 +57,8 @@ export const App: React.FC = () => {
           <Dashboard onOpenStudio={() => setActiveTab('studio')} />
         ) : activeTab === 'studio' ? (
           <WorkflowStudio />
+        ) : activeTab === 'evidence' ? (
+          <EvidenceDecisionCenter currentUser={currentUser} />
         ) : (
           <CandidateInterview
             initialToken={interviewToken}
@@ -68,6 +71,7 @@ export const App: React.FC = () => {
       <footer style={{
         padding: '24px',
         borderTop: '1px solid var(--border-subtle)',
+        background: '#ffffff',
         textAlign: 'center',
         fontSize: '0.8rem',
         color: 'var(--text-dim)',

@@ -4,10 +4,12 @@ from sqlalchemy import select
 from backend.core.database import AsyncSessionLocal, init_db
 from backend.core.security import get_password_hash
 from backend.models.models import (
-    User, WorkflowDefinition, WorkflowVersion, Job, Competency
+    User, WorkflowDefinition, WorkflowVersion, Job, Competency,
+    InterviewSession, TranscriptTurn, EvaluationReport
 )
-from backend.models.enums import UserRole, WorkflowCategory
+from backend.models.enums import UserRole, WorkflowCategory, SessionStatus, TurnSpeaker
 from backend.engine.compiler import HRAgentCompiler
+from backend.engine.decision_engine import ProofCarryingDecisionEngine
 
 async def seed():
     print("Initializing database tables...")
@@ -221,6 +223,70 @@ async def seed():
                 is_active=True
             ))
             print("Compiled and created Onboarding Workflow v1")
+
+        # 3. Seed Demo Candidate Interview & Evaluation Report (for presentation & verification)
+        cand_res = await db.execute(select(InterviewSession).where(InterviewSession.candidate_email == "arjun.sharma@zensar.com"))
+        if not cand_res.scalar_one_or_none():
+            job_res = await db.execute(select(Job).limit(1))
+            seed_job = job_res.scalar_one_or_none()
+            if seed_job:
+                demo_session = InterviewSession(
+                    job_id=seed_job.id,
+                    workflow_version_id=seed_job.workflow_version_id,
+                    candidate_name="Arjun Sharma",
+                    candidate_email="arjun.sharma@zensar.com",
+                    resume_text="Senior Full Stack Engineer with 5+ years specializing in Python, FastAPI async microservices, PostgreSQL query optimization with EXPLAIN ANALYZE, composite B-tree indices, Redis distributed caching, and micro-frontend React architectures.",
+                    invite_token="demo-arjun-token-2026",
+                    status=SessionStatus.COMPLETED
+                )
+                db.add(demo_session)
+                await db.flush()
+
+                # Seed realistic transcript turns
+                turns = [
+                    TranscriptTurn(
+                        session_id=demo_session.id,
+                        turn_index=1,
+                        speaker=TurnSpeaker.AI,
+                        text="Welcome Arjun! To begin, could you explain how you handle high-throughput concurrency and asynchronous I/O in FastAPI microservices?"
+                    ),
+                    TranscriptTurn(
+                        session_id=demo_session.id,
+                        turn_index=2,
+                        speaker=TurnSpeaker.CANDIDATE,
+                        text="In FastAPI, we use native async/await syntax backed by AnyIO and uvloop. For I/O-bound database operations, we integrate async SQLAlchemy with connection pooling and asyncpg. For CPU-bound tasks, we offload to background Celery workers or multiprocessing so the event loop never blocks, maintaining sub-15ms p99 latency."
+                    ),
+                    TranscriptTurn(
+                        session_id=demo_session.id,
+                        turn_index=3,
+                        speaker=TurnSpeaker.AI,
+                        text="That's clear. How do you approach optimizing slow PostgreSQL queries in production when traffic spikes?"
+                    ),
+                    TranscriptTurn(
+                        session_id=demo_session.id,
+                        turn_index=4,
+                        speaker=TurnSpeaker.CANDIDATE,
+                        text="I start with EXPLAIN ANALYZE to identify sequential table scans and buffer bottlenecks. We apply selective partial or composite B-tree indexes, restructure join orders to prevent cartesian blowups, and implement Redis caching for hot read paths alongside read replicas."
+                    ),
+                    TranscriptTurn(
+                        session_id=demo_session.id,
+                        turn_index=5,
+                        speaker=TurnSpeaker.AI,
+                        text="How do you mentor junior engineers and handle disagreements during architecture reviews?"
+                    ),
+                    TranscriptTurn(
+                        session_id=demo_session.id,
+                        turn_index=6,
+                        speaker=TurnSpeaker.CANDIDATE,
+                        text="I focus on blameless technical communication and establishing clear architectural decision records (ADRs). When junior engineers join, we pair-program and conduct constructive PR reviews with clear rationale. For disagreements, we benchmark competing approaches using real telemetry rather than subjective debate."
+                    )
+                ]
+                db.add_all(turns)
+                await db.flush()
+
+                # Generate evaluation report via the Decision Engine
+                await ProofCarryingDecisionEngine.generate_evaluation_report(demo_session.id, db)
+                print("Seeded Demo Candidate: Arjun Sharma with completed Evaluation Report")
 
         await db.commit()
         print("Database seed completed successfully!")

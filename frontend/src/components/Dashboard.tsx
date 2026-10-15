@@ -62,19 +62,19 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
   };
 
   return (
-    <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '32px 24px' }}>
-      {/* Hero Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '32px' }}>
+    <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '32px 24px' }}>
+      {/* Executive Hero Header */}
+      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '28px' }}>
         <div>
-          <span className="badge badge-indigo" style={{ marginBottom: '8px' }}>HR Operations Hub</span>
-          <h1 style={{ fontSize: '2.2rem', fontWeight: 800 }}>HR Command Center</h1>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.98rem', marginTop: '4px' }}>
+          <span className="badge badge-indigo" style={{ marginBottom: '8px' }}>HR Operations Hub &bull; Zensar</span>
+          <h1 style={{ fontSize: '1.9rem', fontWeight: 800, color: 'var(--text-main)' }}>HR Command Center</h1>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.95rem', marginTop: '4px' }}>
             Autonomous employee lifecycle orchestration, competency rubrics, and proof-carrying interview reports.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '12px' }}>
+        <div style={{ display: 'flex', gap: '10px' }}>
           <button className="btn-secondary" onClick={onOpenStudio}>
-            Open Configuration Studio
+            Workflow Studio
           </button>
           <button className="btn-primary" onClick={() => { setIsInviteOpen(true); setInviteResult(null); }}>
             + Invite Candidate for AI Interview
@@ -83,34 +83,34 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
       </div>
 
       {/* KPI Cards */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '20px', marginBottom: '36px' }}>
-        <div className="glass-panel" style={{ padding: '22px' }}>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 600 }}>Active Jobs</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '8px', color: '#818cf8' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '18px', marginBottom: '32px' }}>
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Active Jobs</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '6px', color: 'var(--text-main)' }}>
             {stats?.total_jobs ?? 0}
           </div>
           <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Open positions with rubrics</div>
         </div>
 
-        <div className="glass-panel" style={{ padding: '22px' }}>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 600 }}>Interviews Conducted</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '8px', color: '#34d399' }}>
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Interviews Conducted</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '6px', color: '#16a34a' }}>
             {stats?.total_interviews ?? 0}
           </div>
           <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Evidence-evaluated sessions</div>
         </div>
 
-        <div className="glass-panel" style={{ padding: '22px' }}>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 600 }}>Active Workflows</div>
-          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '8px', color: '#38bdf8' }}>
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Active Workflows</div>
+          <div style={{ fontSize: '2rem', fontWeight: 800, marginTop: '6px', color: 'var(--accent-primary)' }}>
             {stats?.total_workflows ?? 0}
           </div>
           <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Hiring, Onboarding, Assistance</div>
         </div>
 
-        <div className="glass-panel" style={{ padding: '22px' }}>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 600 }}>Autonomous Loop</div>
-          <div style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '12px', color: '#f472b6' }}>
+        <div className="glass-panel" style={{ padding: '20px' }}>
+          <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>Autonomous Loop</div>
+          <div style={{ fontSize: '1.25rem', fontWeight: 700, marginTop: '10px', color: '#1e293b' }}>
             7-Step Verified
           </div>
           <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>Proof-carrying decisions</div>
@@ -121,7 +121,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
       <div className="glass-panel" style={{ padding: '28px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 700 }}>Active Requisitions & Competency Rubrics</h2>
+            <h2 style={{ fontSize: '1.25rem', fontWeight: 700 }}>Active Requisitions & Competency Rubrics</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem' }}>
               Each job is governed by an immutable compiled workflow version and explicit competency criteria.
             </p>
@@ -135,21 +135,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
             No jobs found. Seed database to load default engineering jobs.
           </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
             {jobs.map((job) => (
               <div
                 key={job.id}
                 style={{
-                  background: 'rgba(255, 255, 255, 0.02)',
+                  background: '#f8fafc',
                   border: '1px solid var(--border-subtle)',
-                  borderRadius: '12px',
+                  borderRadius: '10px',
                   padding: '20px',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                   <div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <h3 style={{ fontSize: '1.15rem', fontWeight: 700 }}>{job.title}</h3>
+                      <h3 style={{ fontSize: '1.1rem', fontWeight: 700 }}>{job.title}</h3>
                       <span className="badge badge-indigo">{job.department}</span>
                     </div>
                     <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', marginTop: '4px' }}>
@@ -167,7 +167,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
 
                 {/* Competencies Badges */}
                 <div style={{ marginTop: '16px' }}>
-                  <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 600, marginBottom: '8px' }}>
+                  <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 700, marginBottom: '8px' }}>
                     Evaluated Competencies ({job.competencies.length})
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '12px' }}>
@@ -175,15 +175,16 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
                       <div
                         key={comp.id}
                         style={{
-                          background: 'rgba(0, 0, 0, 0.3)',
+                          background: '#ffffff',
                           border: '1px solid var(--border-subtle)',
                           borderRadius: '8px',
                           padding: '12px',
+                          boxShadow: '0 1px 2px rgba(0,0,0,0.03)'
                         }}
                       >
                         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                          <span style={{ fontWeight: 600, fontSize: '0.88rem' }}>{comp.name}</span>
-                          <span style={{ fontSize: '0.75rem', color: '#a5b4fc', fontWeight: 600 }}>Weight: {comp.weight}x</span>
+                          <span style={{ fontWeight: 700, fontSize: '0.86rem', color: 'var(--text-main)' }}>{comp.name}</span>
+                          <span style={{ fontSize: '0.72rem', color: 'var(--accent-primary)', fontWeight: 700 }}>Weight: {comp.weight}x</span>
                         </div>
                         <p style={{ fontSize: '0.78rem', color: 'var(--text-muted)', marginTop: '4px' }}>
                           {comp.description}
@@ -206,24 +207,24 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
           left: 0,
           right: 0,
           bottom: 0,
-          background: 'rgba(0, 0, 0, 0.75)',
-          backdropFilter: 'blur(8px)',
+          background: 'rgba(15, 23, 42, 0.45)',
+          backdropFilter: 'blur(4px)',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           zIndex: 100,
         }}>
-          <div className="glass-panel" style={{ width: '100%', maxWidth: '580px', padding: '32px' }}>
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '580px', padding: '28px', background: '#ffffff', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '18px' }}>
               <div>
-                <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Issue Candidate Interview Invite</h2>
+                <h2 style={{ fontSize: '1.25rem', fontWeight: 800 }}>Issue Candidate Interview Invite</h2>
                 <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
                   Generates an authenticated HMAC-SHA256 one-time interview link.
                 </p>
               </div>
               <button
                 onClick={() => setIsInviteOpen(false)}
-                style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '1.5rem', cursor: 'pointer' }}
+                style={{ background: 'transparent', border: 'none', color: 'var(--text-dim)', fontSize: '1.4rem', cursor: 'pointer' }}
               >
                 &times;
               </button>
@@ -231,25 +232,26 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
 
             {inviteResult ? (
               <div style={{
-                background: 'rgba(16, 185, 129, 0.12)',
-                border: '1px solid rgba(16, 185, 129, 0.35)',
-                borderRadius: '10px',
+                background: '#f0fdf4',
+                border: '1px solid #bbf7d0',
+                borderRadius: '8px',
                 padding: '20px',
                 textAlign: 'center',
               }}>
                 <span className="badge badge-emerald" style={{ marginBottom: '8px' }}>Link Generated</span>
-                <h3 style={{ fontSize: '1.15rem', color: '#6ee7b7', marginTop: '6px' }}>Interview Invitation Active!</h3>
+                <h3 style={{ fontSize: '1.1rem', color: '#15803d', marginTop: '6px' }}>Interview Invitation Active!</h3>
                 <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', margin: '8px 0 16px 0' }}>
                   A one-time cryptographically signed link has been created for <strong>{inviteResult.candidate_name}</strong>.
                 </p>
 
                 <div style={{
-                  background: 'rgba(0, 0, 0, 0.5)',
+                  background: '#ffffff',
+                  border: '1px solid #cbd5e1',
                   padding: '12px',
-                  borderRadius: '8px',
+                  borderRadius: '6px',
                   fontFamily: 'monospace',
                   fontSize: '0.78rem',
-                  color: '#93c5fd',
+                  color: '#0f172a',
                   wordBreak: 'break-all',
                   marginBottom: '16px',
                   textAlign: 'left',
@@ -281,7 +283,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
             ) : (
               <form onSubmit={handleInviteSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>Target Requisition</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Target Requisition</label>
                   <select
                     value={selectedJobId}
                     onChange={(e) => setSelectedJobId(e.target.value)}
@@ -294,7 +296,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>Candidate Full Name</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Candidate Full Name</label>
                   <input
                     type="text"
                     value={candidateName}
@@ -306,7 +308,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>Candidate Email</label>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Candidate Email</label>
                   <input
                     type="email"
                     value={candidateEmail}
@@ -318,7 +320,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
                 </div>
 
                 <div>
-                  <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>
+                  <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>
                     Candidate Resume Text (for "Defend Your Resume" Claims)
                   </label>
                   <textarea

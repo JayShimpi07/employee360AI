@@ -329,29 +329,30 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
             <div style={{
               width: '48px',
               height: '48px',
-              borderRadius: '14px',
-              background: 'var(--gradient-brand)',
+              borderRadius: '10px',
+              background: 'var(--accent-primary)',
               display: 'inline-flex',
               alignItems: 'center',
               justifyContent: 'center',
               fontWeight: 800,
-              fontSize: '1.4rem',
+              fontSize: '1.3rem',
               color: '#ffffff',
               marginBottom: '12px',
+              boxShadow: '0 2px 6px rgba(37, 99, 235, 0.25)'
             }}>
               360
             </div>
-            <h2 style={{ fontSize: '1.5rem', fontWeight: 800 }}>Candidate Interview Portal</h2>
+            <h2 style={{ fontSize: '1.45rem', fontWeight: 800 }}>Candidate Interview Portal</h2>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.86rem', marginTop: '4px' }}>
-              Autonomous Evidence-Driven Evaluation
+              Autonomous Evidence-Driven Evaluation &bull; Zensar
             </p>
           </div>
 
           {verifyError && (
             <div style={{
-              background: 'rgba(244, 63, 94, 0.15)',
-              border: '1px solid rgba(244, 63, 94, 0.35)',
-              color: '#fda4af',
+              background: '#fef2f2',
+              border: '1px solid #fecaca',
+              color: '#b91c1c',
               padding: '12px',
               borderRadius: '8px',
               fontSize: '0.85rem',
@@ -363,7 +364,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
 
           <form onSubmit={(e) => { e.preventDefault(); handleVerifyToken(token, email); }} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>Invitation Token</label>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Invitation Token</label>
               <input
                 type="text"
                 value={token}
@@ -374,7 +375,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>Candidate Email</label>
+              <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Candidate Email</label>
               <input
                 type="email"
                 value={email}
@@ -403,7 +404,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
         <div className="glass-panel" style={{ padding: '36px' }}>
           <div style={{ marginBottom: '24px' }}>
             <span className="badge badge-indigo">Pre-Interview System Check</span>
-            <h1 style={{ fontSize: '1.8rem', fontWeight: 800, marginTop: '8px' }}>
+            <h1 style={{ fontSize: '1.7rem', fontWeight: 800, marginTop: '8px' }}>
               Welcome, {sessionData?.candidate_name}!
             </h1>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginTop: '4px' }}>
@@ -417,8 +418,8 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
               <div style={{
                 width: '100%',
                 height: '240px',
-                background: '#040711',
-                borderRadius: '12px',
+                background: '#0f172a',
+                borderRadius: '10px',
                 overflow: 'hidden',
                 position: 'relative',
                 border: '1px solid var(--border-subtle)',
@@ -440,7 +441,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    color: 'var(--text-dim)',
+                    color: '#94a3b8',
                     fontSize: '0.85rem',
                   }}>
                     Camera permission required
@@ -452,19 +453,19 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
             {/* Checklist & Audio Meter */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', justifyContent: 'center' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ color: hasCamera ? '#34d399' : '#f87171', fontSize: '1.2rem' }}>
+                <span style={{ color: hasCamera ? '#16a34a' : '#dc2626', fontSize: '1.2rem', fontWeight: 700 }}>
                   {hasCamera ? '✓' : '✗'}
                 </span>
-                <span style={{ fontSize: '0.9rem', color: hasCamera ? '#f8fafc' : 'var(--text-muted)' }}>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: 500 }}>
                   Camera: {hasCamera ? 'Connected & Operational' : 'Awaiting Permission'}
                 </span>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-                <span style={{ color: hasMic ? '#34d399' : '#f87171', fontSize: '1.2rem' }}>
+                <span style={{ color: hasMic ? '#16a34a' : '#dc2626', fontSize: '1.2rem', fontWeight: 700 }}>
                   {hasMic ? '✓' : '✗'}
                 </span>
-                <span style={{ fontSize: '0.9rem', color: hasMic ? '#f8fafc' : 'var(--text-muted)' }}>
+                <span style={{ fontSize: '0.9rem', color: 'var(--text-main)', fontWeight: 500 }}>
                   Microphone: {hasMic ? 'Audio Input Detected' : 'Awaiting Permission'}
                 </span>
               </div>
@@ -473,13 +474,13 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
               <div>
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', color: 'var(--text-muted)', marginBottom: '4px' }}>
                   <span>Microphone Signal Level</span>
-                  <span>{audioLevel}%</span>
+                  <span style={{ fontWeight: 600 }}>{audioLevel}%</span>
                 </div>
-                <div style={{ width: '100%', height: '8px', background: 'rgba(255,255,255,0.08)', borderRadius: '4px', overflow: 'hidden' }}>
+                <div style={{ width: '100%', height: '8px', background: '#e2e8f0', borderRadius: '4px', overflow: 'hidden' }}>
                   <div style={{
                     width: `${audioLevel}%`,
                     height: '100%',
-                    background: 'var(--gradient-brand)',
+                    background: 'var(--accent-primary)',
                     transition: 'width 0.1s ease',
                   }} />
                 </div>
@@ -487,7 +488,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
 
               {/* Consent Box */}
               <div style={{
-                background: 'rgba(0,0,0,0.3)',
+                background: '#f8fafc',
                 padding: '12px',
                 borderRadius: '8px',
                 border: '1px solid var(--border-subtle)',
@@ -529,16 +530,17 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
   // RENDER STEP 3: Live Spoken Interview Room
   if (step === 'room') {
     return (
-      <div style={{ maxWidth: '1400px', margin: '0 auto', padding: '24px', height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}>
+      <div style={{ maxWidth: '1360px', margin: '0 auto', padding: '24px', height: 'calc(100vh - 80px)', display: 'flex', flexDirection: 'column' }}>
         {/* Header Bar */}
         <div style={{
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          padding: '14px 20px',
-          background: 'rgba(17, 24, 39, 0.8)',
-          borderRadius: '12px',
+          padding: '12px 20px',
+          background: '#ffffff',
+          borderRadius: '10px',
           border: '1px solid var(--border-subtle)',
+          boxShadow: '0 1px 2px rgba(0,0,0,0.03)',
           marginBottom: '16px',
         }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
@@ -546,33 +548,32 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
               width: '10px',
               height: '10px',
               borderRadius: '50%',
-              background: wsConnected ? '#34d399' : '#f87171',
-              boxShadow: wsConnected ? '0 0 8px #34d399' : 'none',
+              background: wsConnected ? '#16a34a' : '#dc2626',
             }} />
             <div>
-              <span style={{ fontWeight: 700, fontSize: '0.98rem' }}>{sessionData?.job_title}</span>
+              <span style={{ fontWeight: 700, fontSize: '0.95rem', color: 'var(--text-main)' }}>{sessionData?.job_title}</span>
               <span style={{ color: 'var(--text-dim)', fontSize: '0.82rem', marginLeft: '10px' }}>
-                Candidate: {sessionData?.candidate_name}
+                Candidate: <strong>{sessionData?.candidate_name}</strong>
               </span>
             </div>
           </div>
 
           {/* AI Status Badge */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             {isRecording && (
               <span className="badge badge-cyan">Mic Listening 🎙️</span>
             )}
             <span className={`badge ${agentStatus === 'SPEAKING' ? 'badge-indigo' : agentStatus === 'THINKING' ? 'badge-amber' : 'badge-emerald'}`}>
               AI Status: {agentStatus}
             </span>
-            <button className="btn-secondary" onClick={handleEndInterview} style={{ padding: '6px 14px', fontSize: '0.82rem', color: '#fda4af' }}>
+            <button className="btn-secondary" onClick={handleEndInterview} style={{ padding: '6px 12px', fontSize: '0.80rem', color: '#b91c1c', borderColor: '#fecaca' }}>
               End Session
             </button>
           </div>
         </div>
 
         {/* Main Room Grid */}
-        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '420px 1fr', gap: '20px', overflow: 'hidden' }}>
+        <div style={{ flex: 1, display: 'grid', gridTemplateColumns: '400px 1fr', gap: '20px', overflow: 'hidden' }}>
           {/* Left Column: AI Avatar & Candidate Video */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             {/* AI Avatar Pulse Box */}
@@ -582,53 +583,47 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              padding: '28px',
+              padding: '24px',
               textAlign: 'center',
               position: 'relative',
             }}>
-              {/* Animated Glowing Pulse Avatar */}
+              {/* Clean Corporate AI Avatar */}
               <div style={{
-                width: '130px',
-                height: '130px',
+                width: '120px',
+                height: '120px',
                 borderRadius: '50%',
-                background: agentStatus === 'SPEAKING'
-                  ? 'linear-gradient(135deg, #6366f1, #d946ef)'
-                  : agentStatus === 'THINKING'
-                  ? 'linear-gradient(135deg, #f59e0b, #ef4444)'
-                  : 'linear-gradient(135deg, #10b981, #06b6d4)',
+                background: agentStatus === 'SPEAKING' ? 'var(--accent-primary)' : agentStatus === 'THINKING' ? '#d97706' : '#16a34a',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                boxShadow: agentStatus === 'SPEAKING'
-                  ? '0 0 36px rgba(99, 102, 241, 0.6)'
-                  : '0 0 20px rgba(16, 185, 129, 0.3)',
+                boxShadow: '0 4px 14px rgba(37, 99, 235, 0.25)',
                 transition: 'all 0.3s ease',
-                marginBottom: '18px',
+                marginBottom: '16px',
               }}>
                 <div style={{
-                  width: '110px',
-                  height: '110px',
+                  width: '104px',
+                  height: '104px',
                   borderRadius: '50%',
-                  background: '#090d16',
+                  background: '#ffffff',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  color: '#ffffff',
+                  color: agentStatus === 'SPEAKING' ? 'var(--accent-primary)' : agentStatus === 'THINKING' ? '#d97706' : '#16a34a',
                   fontWeight: 800,
-                  fontSize: '1.8rem',
+                  fontSize: '1.6rem',
                 }}>
                   AI
                 </div>
               </div>
 
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700 }}>Alex (AI Interviewer)</h3>
+              <h3 style={{ fontSize: '1.15rem', fontWeight: 700, color: 'var(--text-main)' }}>Alex (AI Interviewer)</h3>
               <p style={{ color: 'var(--text-muted)', fontSize: '0.82rem', marginTop: '4px' }}>
                 Senior Technical Evaluation Specialist
               </p>
             </div>
 
             {/* Candidate PIP Webcam Box */}
-            <div className="glass-panel" style={{ height: '220px', overflow: 'hidden', position: 'relative' }}>
+            <div className="glass-panel" style={{ height: '210px', overflow: 'hidden', position: 'relative', background: '#0f172a' }}>
               <video
                 ref={(el) => {
                   if (el && mediaStreamRef.current && el.srcObject !== mediaStreamRef.current) {
@@ -644,11 +639,11 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
                 position: 'absolute',
                 bottom: '10px',
                 left: '12px',
-                background: 'rgba(0,0,0,0.6)',
-                padding: '4px 10px',
-                borderRadius: '6px',
-                fontSize: '0.75rem',
-                color: '#f8fafc',
+                background: 'rgba(15, 23, 42, 0.75)',
+                padding: '3px 8px',
+                borderRadius: '4px',
+                fontSize: '0.74rem',
+                color: '#ffffff',
               }}>
                 {sessionData?.candidate_name} (Camera Active)
               </div>
@@ -658,7 +653,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
           {/* Right Column: Live Conversation Dialogue Stream & Mic Controls */}
           <div className="glass-panel" style={{ display: 'flex', flexDirection: 'column', padding: '20px', overflow: 'hidden' }}>
             <div style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '12px', marginBottom: '14px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <span style={{ fontSize: '0.85rem', color: 'var(--text-muted)', textTransform: 'uppercase', fontWeight: 600 }}>
+              <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)', textTransform: 'uppercase', fontWeight: 700 }}>
                 Live Spoken Dialogue Transcript ({dialogue.length} turns)
               </span>
               <span style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
@@ -668,48 +663,51 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
 
             {/* Scrollable Dialogue List */}
             <div style={{ flex: 1, overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '14px', paddingRight: '8px' }}>
-              {dialogue.map((turn, idx) => (
-                <div
-                  key={idx}
-                  style={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignSelf: turn.speaker === 'AI' ? 'flex-start' : 'flex-end',
-                    maxWidth: '82%',
-                  }}
-                >
-                  <div style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                    marginBottom: '4px',
-                    alignSelf: turn.speaker === 'AI' ? 'flex-start' : 'flex-end',
-                  }}>
-                    <span style={{ fontSize: '0.75rem', fontWeight: 700, color: turn.speaker === 'AI' ? '#818cf8' : '#34d399' }}>
-                      {turn.speaker === 'AI' ? 'Alex (AI Interviewer)' : sessionData?.candidate_name}
-                    </span>
-                    <span style={{ fontSize: '0.70rem', color: 'var(--text-dim)' }}>
-                      {turn.time}
-                    </span>
-                    {turn.latencyMs && (
-                      <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', background: 'rgba(0,0,0,0.3)', padding: '1px 4px', borderRadius: '4px' }}>
-                        {turn.latencyMs}ms
+              {dialogue.map((turn, idx) => {
+                const isAI = turn.speaker === 'AI';
+                return (
+                  <div
+                    key={idx}
+                    style={{
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignSelf: isAI ? 'flex-start' : 'flex-end',
+                      maxWidth: '82%',
+                    }}
+                  >
+                    <div style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      marginBottom: '4px',
+                      alignSelf: isAI ? 'flex-start' : 'flex-end',
+                    }}>
+                      <span style={{ fontSize: '0.75rem', fontWeight: 700, color: isAI ? 'var(--accent-primary)' : '#15803d' }}>
+                        {isAI ? 'Alex (AI Interviewer)' : sessionData?.candidate_name}
                       </span>
-                    )}
+                      <span style={{ fontSize: '0.70rem', color: 'var(--text-dim)' }}>
+                        {turn.time}
+                      </span>
+                      {turn.latencyMs && (
+                        <span style={{ fontSize: '0.68rem', color: 'var(--text-dim)', background: '#f1f5f9', padding: '1px 4px', borderRadius: '4px', border: '1px solid #e2e8f0' }}>
+                          {turn.latencyMs}ms
+                        </span>
+                      )}
+                    </div>
+                    <div style={{
+                      background: isAI ? '#f1f5f9' : '#eff6ff',
+                      border: `1px solid ${isAI ? 'var(--border-subtle)' : '#bfdbfe'}`,
+                      borderRadius: isAI ? '4px 12px 12px 12px' : '12px 4px 12px 12px',
+                      padding: '12px 16px',
+                      fontSize: '0.90rem',
+                      lineHeight: '1.45',
+                      color: isAI ? 'var(--text-main)' : '#1e3a8a',
+                    }}>
+                      {turn.text}
+                    </div>
                   </div>
-                  <div style={{
-                    background: turn.speaker === 'AI' ? 'rgba(30, 41, 59, 0.75)' : 'rgba(99, 102, 241, 0.25)',
-                    border: `1px solid ${turn.speaker === 'AI' ? 'var(--border-subtle)' : 'var(--border-highlight)'}`,
-                    borderRadius: turn.speaker === 'AI' ? '4px 16px 16px 16px' : '16px 4px 16px 16px',
-                    padding: '12px 16px',
-                    fontSize: '0.92rem',
-                    lineHeight: '1.45',
-                    color: '#f8fafc',
-                  }}>
-                    {turn.text}
-                  </div>
-                </div>
-              ))}
+                );
+              })}
               <div ref={turnsEndRef} />
             </div>
 
@@ -729,14 +727,14 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
                   className="btn-primary"
                   onClick={handleSendCandidateTurn}
                   disabled={!candidateSpeechText.trim()}
-                  style={{ padding: '10px 20px' }}
+                  style={{ padding: '9px 18px' }}
                 >
                   Send Response →
                 </button>
                 <button
                   className="btn-secondary"
                   onClick={toggleMic}
-                  style={{ padding: '10px 16px', color: isMicMuted ? '#f87171' : 'inherit' }}
+                  style={{ padding: '9px 14px', color: isMicMuted ? '#dc2626' : 'inherit' }}
                   title="Toggle Microphone"
                 >
                   {isMicMuted ? 'Mic Muted 🔇' : 'Mic Active 🎙️'}
@@ -757,13 +755,13 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
     <div style={{ maxWidth: '640px', margin: '60px auto', padding: '24px' }}>
       <div className="glass-panel" style={{ padding: '40px', textAlign: 'center' }}>
         <div style={{
-          width: '64px',
-          height: '64px',
+          width: '60px',
+          height: '60px',
           borderRadius: '50%',
-          background: 'rgba(16, 185, 129, 0.2)',
-          border: '2px solid #10b981',
-          color: '#34d399',
-          fontSize: '2rem',
+          background: '#f0fdf4',
+          border: '2px solid #16a34a',
+          color: '#16a34a',
+          fontSize: '1.8rem',
           display: 'inline-flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -771,15 +769,15 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
         }}>
           ✓
         </div>
-        <h1 style={{ fontSize: '1.8rem', fontWeight: 800 }}>Interview Session Concluded</h1>
+        <h1 style={{ fontSize: '1.7rem', fontWeight: 800 }}>Interview Session Concluded</h1>
         <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', marginTop: '6px' }}>
           Thank you, <strong>{sessionData?.candidate_name}</strong>. Your spoken answers have been recorded and mapped to job competencies.
         </p>
 
         <div style={{
-          background: 'rgba(0,0,0,0.3)',
+          background: '#f8fafc',
           border: '1px solid var(--border-subtle)',
-          borderRadius: '10px',
+          borderRadius: '8px',
           padding: '18px',
           margin: '24px 0',
           textAlign: 'left',
@@ -787,15 +785,15 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
         }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span style={{ color: 'var(--text-dim)' }}>Session Reference:</span>
-            <code style={{ color: '#93c5fd' }}>{sessionData?.session_id}</code>
+            <code>{sessionData?.session_id}</code>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '8px' }}>
             <span style={{ color: 'var(--text-dim)' }}>Position:</span>
-            <span>{sessionData?.job_title}</span>
+            <span style={{ fontWeight: 600 }}>{sessionData?.job_title}</span>
           </div>
           <div style={{ display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ color: 'var(--text-dim)' }}>Dialogue Turns Recorded:</span>
-            <span>{dialogue.length} turns</span>
+            <span style={{ fontWeight: 600 }}>{dialogue.length} turns</span>
           </div>
         </div>
 

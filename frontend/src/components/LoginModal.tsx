@@ -46,8 +46,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
       left: 0,
       right: 0,
       bottom: 0,
-      background: 'rgba(0, 0, 0, 0.75)',
-      backdropFilter: 'blur(8px)',
+      background: 'rgba(15, 23, 42, 0.45)',
+      backdropFilter: 'blur(4px)',
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'center',
@@ -56,13 +56,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
       <div className="glass-panel" style={{
         width: '100%',
         maxWidth: '460px',
-        padding: '32px',
+        padding: '30px',
+        background: '#ffffff',
+        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1)',
         position: 'relative',
       }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
           <div>
-            <h2 style={{ fontSize: '1.4rem', fontWeight: 700 }}>Employee360 Authentication</h2>
-            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Role-Based Access Control System</p>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800 }}>Employee360 Authentication</h2>
+            <p style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>Role-Based Access Control System &bull; Zensar</p>
           </div>
           <button
             onClick={onClose}
@@ -70,7 +72,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
               background: 'transparent',
               border: 'none',
               color: 'var(--text-dim)',
-              fontSize: '1.5rem',
+              fontSize: '1.4rem',
               cursor: 'pointer',
             }}
           >
@@ -80,9 +82,9 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
 
         {error && (
           <div style={{
-            background: 'rgba(244, 63, 94, 0.15)',
-            border: '1px solid rgba(244, 63, 94, 0.35)',
-            color: '#fda4af',
+            background: '#fef2f2',
+            border: '1px solid #fecaca',
+            color: '#b91c1c',
             padding: '10px 14px',
             borderRadius: '8px',
             fontSize: '0.85rem',
@@ -94,8 +96,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
 
         {/* Quick Demo Logins */}
         <div style={{ marginBottom: '20px' }}>
-          <div style={{ fontSize: '0.78rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 600, marginBottom: '8px' }}>
-            Instant Role Switch (Seed Accounts)
+          <div style={{ fontSize: '0.75rem', textTransform: 'uppercase', color: 'var(--text-dim)', fontWeight: 700, marginBottom: '8px' }}>
+            Instant Role Switch (Demo Accounts)
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
             <button
@@ -122,20 +124,20 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
               onClick={() => handleLogin('alex.smith@zensar.com', 'employee123')}
               disabled={loading}
             >
-              <span><strong>Synthetic Employee</strong> (alex.smith@zensar.com)</span>
+              <span><strong>Employee</strong> (alex.smith@zensar.com)</span>
               <span className="badge badge-emerald">Employee</span>
             </button>
           </div>
         </div>
 
-        <div style={{ textAlign: 'center', margin: '14px 0', color: 'var(--text-dim)', fontSize: '0.8rem' }}>
+        <div style={{ textAlign: 'center', margin: '14px 0', color: 'var(--text-dim)', fontSize: '0.75rem', fontWeight: 600 }}>
           — OR ENTER CREDENTIALS —
         </div>
 
         {/* Form Inputs */}
         <form onSubmit={(e) => { e.preventDefault(); handleLogin(); }} style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>Email Address</label>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Email Address</label>
             <input
               type="email"
               value={email}
@@ -145,7 +147,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ isOpen, onClose, onLogin
             />
           </div>
           <div>
-            <label style={{ display: 'block', fontSize: '0.82rem', marginBottom: '6px', color: 'var(--text-muted)' }}>Password</label>
+            <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Password</label>
             <input
               type="password"
               value={password}
