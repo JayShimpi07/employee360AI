@@ -115,3 +115,39 @@ async def reviewer_signoff(
         "is_finalized": report.is_finalized,
         "reviewer": current_user.full_name
     }
+
+@router.post("/cleanup-test-data")
+async def cleanup_test_data(
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Cleans up duplicate automated test runners and unverified test entries
+    while preserving seeded and real candidate records.
+    """
+    from backend.models.models import ProctoringEvent, TranscriptTurn
+    from sqlalchemy import delete
+
+    res = await db.execute(
+        select(InterviewSession).where(
+            (InterviewSession.candidate_name.ilike("%test%")) |
+            (InterviewSession.candidate_email.ilike("%e2e%")) |
+            (InterviewSession.candidate_name == "abc") |
+            (InterviewSession.candidate_email == "arjun.sharma@example.com")
+        )
+    )
+    junk_sessions = res.scalars().all()
+    junk_ids = [s.id for s in junk_sessions]
+
+    if junk_ids:
+        await db.execute(delete(EvaluationReport).where(EvaluationReport.session_id.in_(junk_ids)))
+        await db.execute(delete(TranscriptTurn).where(TranscriptTurn.session_id.in_(junk_ids)))
+        await db.execute(delete(ProctoringEvent).where(ProctoringEvent.session_id.in_(junk_ids)))
+        await db.execute(delete(InterviewSession).where(InterviewSession.id.in_(junk_ids)))
+        await db.commit()
+
+    return {
+        "success": True,
+        "deleted_count": len(junk_ids),
+        "message": f"Successfully cleared {len(junk_ids)} temporary test sessions."
+    }
+

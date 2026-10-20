@@ -20,6 +20,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInter
   const [resumeText, setResumeText] = useState('');
   const [inviting, setInviting] = useState(false);
   const [inviteResult, setInviteResult] = useState<InviteCandidateResponse | null>(null);
+  const [isGuideOpen, setIsGuideOpen] = useState(false);
+  const [cleaning, setCleaning] = useState(false);
+
+  const handleCleanTestData = async () => {
+    if (!confirm('This will remove automated test runner entries and temporary duplicate candidates to keep your dashboard clean. Proceed?')) return;
+    try {
+      setCleaning(true);
+      const res = await api.cleanupTestData();
+      alert(res.message || 'Cleaned test data successfully!');
+      loadData();
+    } catch (err: any) {
+      alert(err.message || 'Cleanup failed');
+    } finally {
+      setCleaning(false);
+    }
+  };
+
 
   useEffect(() => {
     loadData();
@@ -73,7 +90,23 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInter
             Autonomous employee lifecycle orchestration, competency rubrics, and proof-carrying interview reports.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '10px' }}>
+        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <button
+            className="btn-secondary"
+            onClick={() => setIsGuideOpen(true)}
+            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#2563eb' }}
+          >
+            📖 System Feature Guide
+          </button>
+          <button
+            className="btn-secondary"
+            onClick={handleCleanTestData}
+            disabled={cleaning}
+            title="Clean duplicate automated test runner entries"
+            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
+          >
+            {cleaning ? 'Cleaning...' : '🧹 Clean Test Runs'}
+          </button>
           <button className="btn-secondary" onClick={onOpenStudio}>
             Workflow Studio
           </button>
@@ -81,6 +114,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInter
             + Invite Candidate for AI Interview
           </button>
         </div>
+
       </div>
 
       {/* KPI Cards */}
@@ -427,6 +461,151 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInter
           </div>
         </div>
       )}
+
+      {/* Feature Guide Modal */}
+      {isGuideOpen && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          background: 'rgba(15, 23, 42, 0.65)',
+          backdropFilter: 'blur(4px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          zIndex: 1000,
+          padding: '20px',
+        }}>
+          <div className="glass-panel" style={{
+            maxWidth: '920px',
+            width: '100%',
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            background: '#ffffff',
+            padding: '32px',
+            borderRadius: '12px',
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)',
+          }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px' }}>
+              <div>
+                <span className="badge badge-indigo">System Architecture & Walkthrough</span>
+                <h2 style={{ fontSize: '1.6rem', fontWeight: 800, color: 'var(--text-main)', marginTop: '6px' }}>
+                  Employee360 AI &bull; Feature Architecture & Purpose
+                </h2>
+                <p style={{ color: 'var(--text-muted)', fontSize: '0.90rem', marginTop: '2px' }}>
+                  An evidence-driven autonomous framework managing the complete employee lifecycle from AI Interviews to Onboarding & HR Assistance.
+                </p>
+              </div>
+              <button
+                className="btn-secondary"
+                onClick={() => setIsGuideOpen(false)}
+                style={{ padding: '6px 12px', fontSize: '0.82rem' }}
+              >
+                ✕ Close
+              </button>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              {/* Feature 1 */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🏢</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>1. HR Command Center (Hiring Hub)</h3>
+                  <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>Recruiter / HR Admin</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                  <strong>What it does:</strong> Allows HR managers to view active job openings, track interview counts, and issue secure one-time cryptographic invitation links to candidates. The links use HMAC-SHA256 tokens to prevent link forgery.
+                </p>
+              </div>
+
+              {/* Feature 2 */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🎨</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>2. AI Workflow Studio (Pipeline Designer)</h3>
+                  <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>Hiring Committee</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                  <strong>What it does:</strong> Lets HR configure how the AI interviews candidates without writing code. You set the AI interviewer persona ("Alex"), define sequential stages (Greeting &rarr; Technical Architecture &rarr; Resume Defense &rarr; Culture), and compile it into an immutable version with a SHA-256 fingerprint so candidates are evaluated against identical standards.
+                </p>
+              </div>
+
+              {/* Feature 3 */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🎙️</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>3. Candidate Interview Portal (Live AI Interview)</h3>
+                  <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>Job Candidate</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                  <strong>What it does:</strong> The actual interview environment seen by candidates. Includes hardware pre-flight check (camera/mic visualizer), live synthetic speech from the AI interviewer, Speech-to-Text transcription, and 1 FPS camera integrity monitoring.
+                </p>
+              </div>
+
+              {/* Feature 4 */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>⚖️</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>4. Evidence & Decision Center (Audit Reports)</h3>
+                  <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>HR Reviewer / Lead</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                  <strong>What it does:</strong> Solves the black-box AI problem. Instead of an unexplained score, every competency score is directly linked to verbatim transcript quotes and verified claims from the candidate's resume. Human HR reviewers retain final sign-off authority (Approve, Flag, Reject).
+                </p>
+              </div>
+
+              {/* Feature 5 */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🛡️</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>5. Adversarial Proctoring Lab (Integrity Core)</h3>
+                  <span className="badge badge-amber" style={{ fontSize: '0.72rem' }}>Anti-Cheating Testbed</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                  <strong>What it does:</strong> Demonstrates the computer vision models protecting interview integrity. You can test live webcam or benchmark synthetic attack scenarios: face absence, multiple faces (proxy interviews), phone glances, and tab switching.
+                </p>
+              </div>
+
+              {/* Feature 6 */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>💼</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>6. Employee Portal & Harper AI Assistant</h3>
+                  <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>Employee / New Joiner</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                  <strong>What it does:</strong> Once hired, the employee transitions here. Complete mandatory onboarding tasks (W-4 tax declaration, developer laptop selection, SOC-2 policy sign-off) and interact with "Harper" the autonomous HR assistant for instant leave booking and policy Q&A grounded in company handbooks.
+                </p>
+              </div>
+
+              {/* Feature 7 */}
+              <div style={{ background: '#f8fafc', border: '1px solid #e2e8f0', borderRadius: '8px', padding: '16px' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                  <span style={{ fontSize: '1.2rem' }}>🔬</span>
+                  <h3 style={{ fontSize: '1rem', fontWeight: 700, color: '#0f172a' }}>7. Research & Fairness Lab (Governance)</h3>
+                  <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>Compliance & AI Ethics</span>
+                </div>
+                <p style={{ fontSize: '0.85rem', color: '#475569', margin: 0, lineHeight: '1.45' }}>
+                  <strong>What it does:</strong> Validates algorithmic fairness across demographic subgroups (counterfactual fairness testing) and benchmarks sub-second end-to-end latency to ensure ethical, reliable AI deployment.
+                </p>
+              </div>
+            </div>
+
+            <div style={{ marginTop: '24px', textAlign: 'right' }}>
+              <button
+                className="btn-primary"
+                onClick={() => setIsGuideOpen(false)}
+                style={{ padding: '8px 20px' }}
+              >
+                Got It, Thanks!
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+

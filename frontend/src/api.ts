@@ -101,6 +101,10 @@ export const api = {
       body: JSON.stringify({ status, notes }),
     });
   },
+  cleanupTestData: async () => {
+    return apiRequest<any>('/evidence/cleanup-test-data', { method: 'POST' });
+  },
+
 
   // Interviews & Transcripts
   getInterviewTranscript: async (sessionId: string) => {
