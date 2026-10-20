@@ -45,6 +45,10 @@ app.mount("/storage", StaticFiles(directory="storage"), name="storage")
 app.include_router(api_router)
 app.include_router(ws_router)
 
+@app.get("/health", tags=["Root"])
+async def health():
+    return {"status": "healthy", "app_name": settings.APP_NAME}
+
 @app.get("/", tags=["Root"])
 async def root():
     return {
