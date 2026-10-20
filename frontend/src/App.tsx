@@ -69,7 +69,14 @@ export const App: React.FC = () => {
 
       <main style={{ flex: 1 }}>
         {activeTab === 'dashboard' ? (
-          <Dashboard onOpenStudio={() => setActiveTab('studio')} />
+          <Dashboard
+            onOpenStudio={() => setActiveTab('studio')}
+            onStartInterview={(tok, em) => {
+              setInterviewToken(tok);
+              setInterviewEmail(em);
+              setActiveTab('interview');
+            }}
+          />
         ) : activeTab === 'studio' ? (
           <WorkflowStudio />
         ) : activeTab === 'evidence' ? (

@@ -43,8 +43,9 @@ def generate_candidate_token(session_id: str, candidate_email: str) -> str:
     Generates a secure, URL-safe invitation token for candidates.
     Format: session_id:expires_timestamp:signature
     """
+    clean_email = candidate_email.strip().lower()
     expires_at = int(time.time()) + (settings.CANDIDATE_TOKEN_EXPIRE_HOURS * 3600)
-    payload = f"{session_id}:{candidate_email}:{expires_at}"
+    payload = f"{session_id}:{clean_email}:{expires_at}"
     signature = hmac.new(
         settings.SECRET_KEY.encode(),
         payload.encode(),
@@ -55,9 +56,20 @@ def generate_candidate_token(session_id: str, candidate_email: str) -> str:
 def verify_candidate_token(token: str, candidate_email: str) -> Optional[str]:
     """
     Verifies token validity and expiration. Returns session_id if valid, None otherwise.
+    Cleanses token from accidental URL pasting, trailing '&email=', or whitespace.
     """
     try:
-        parts = token.split(".")
+        clean_email = candidate_email.strip().lower()
+        clean_tok = token.strip()
+        # If user pasted a full URL or query string into token input
+        if "token=" in clean_tok:
+            clean_tok = clean_tok.split("token=")[1].split("&")[0]
+        elif "&email=" in clean_tok:
+            clean_tok = clean_tok.split("&email=")[0]
+        elif "&" in clean_tok:
+            clean_tok = clean_tok.split("&")[0]
+
+        parts = clean_tok.split(".")
         if len(parts) != 3:
             return None
         session_id, expires_at_str, signature = parts
@@ -67,8 +79,8 @@ def verify_candidate_token(token: str, candidate_email: str) -> Optional[str]:
         if time.time() > expires_at:
             return None
         
-        # Verify signature
-        payload = f"{session_id}:{candidate_email}:{expires_at}"
+        # Verify signature with normalized email
+        payload = f"{session_id}:{clean_email}:{expires_at}"
         expected_sig = hmac.new(
             settings.SECRET_KEY.encode(),
             payload.encode(),
@@ -77,6 +89,17 @@ def verify_candidate_token(token: str, candidate_email: str) -> Optional[str]:
         
         if hmac.compare_digest(signature, expected_sig):
             return session_id
+
+        # Also check with raw email string if legacy token
+        payload_raw = f"{session_id}:{candidate_email.strip()}:{expires_at}"
+        expected_sig_raw = hmac.new(
+            settings.SECRET_KEY.encode(),
+            payload_raw.encode(),
+            hashlib.sha256
+        ).hexdigest()
+        if hmac.compare_digest(signature, expected_sig_raw):
+            return session_id
+
         return None
     except Exception:
         return None

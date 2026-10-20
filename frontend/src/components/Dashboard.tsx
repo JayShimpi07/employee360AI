@@ -4,9 +4,10 @@ import { Job, SystemStats, InviteCandidateResponse } from '../types';
 
 interface DashboardProps {
   onOpenStudio: () => void;
+  onStartInterview?: (token: string, email: string) => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInterview }) => {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -244,41 +245,128 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio }) => {
                   A one-time cryptographically signed link has been created for <strong>{inviteResult.candidate_name}</strong>.
                 </p>
 
-                <div style={{
-                  background: '#ffffff',
-                  border: '1px solid #cbd5e1',
-                  padding: '12px',
-                  borderRadius: '6px',
-                  fontFamily: 'monospace',
-                  fontSize: '0.78rem',
-                  color: '#0f172a',
-                  wordBreak: 'break-all',
-                  marginBottom: '16px',
-                  textAlign: 'left',
-                }}>
-                  {inviteResult.invite_url}
-                </div>
+                {(() => {
+                  const actualUrl = `${window.location.origin}/?token=${inviteResult.invite_token}&email=${encodeURIComponent(inviteResult.candidate_email)}`;
+                  return (
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', textAlign: 'left' }}>
+                      {onStartInterview && (
+                        <button
+                          className="btn-primary"
+                          style={{
+                            background: '#16a34a',
+                            borderColor: '#15803d',
+                            padding: '12px 18px',
+                            fontSize: '0.95rem',
+                            fontWeight: 700,
+                            justifyContent: 'center',
+                            width: '100%',
+                            boxShadow: '0 2px 8px rgba(22, 163, 74, 0.25)'
+                          }}
+                          onClick={() => {
+                            onStartInterview(inviteResult.invite_token, inviteResult.candidate_email);
+                            setIsInviteOpen(false);
+                            setInviteResult(null);
+                          }}
+                        >
+                          🚀 Launch Interview as Candidate (1-Click)
+                        </button>
+                      )}
 
-                <div style={{ display: 'flex', gap: '10px', justifyContent: 'center' }}>
-                  <button
-                    className="btn-primary"
-                    onClick={() => {
-                      navigator.clipboard.writeText(inviteResult.invite_url);
-                      alert('Copied interview link to clipboard!');
-                    }}
-                  >
-                    Copy Link
-                  </button>
-                  <button
-                    className="btn-secondary"
-                    onClick={() => {
-                      setIsInviteOpen(false);
-                      setInviteResult(null);
-                    }}
-                  >
-                    Done
-                  </button>
-                </div>
+                      <div>
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                          <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--text-main)' }}>Direct Invitation URL</label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              navigator.clipboard.writeText(actualUrl);
+                              alert('Copied URL to clipboard!');
+                            }}
+                            style={{ fontSize: '0.72rem', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                          >
+                            📋 Copy URL
+                          </button>
+                        </div>
+                        <textarea
+                          readOnly
+                          value={actualUrl}
+                          onFocus={(e) => e.target.select()}
+                          rows={2}
+                          style={{
+                            width: '100%',
+                            fontFamily: 'monospace',
+                            fontSize: '0.75rem',
+                            padding: '8px',
+                            borderRadius: '6px',
+                            border: '1px solid #cbd5e1',
+                            background: '#ffffff',
+                            color: '#0f172a',
+                            resize: 'none'
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}>Candidate Email</label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(inviteResult.candidate_email);
+                                alert('Copied email to clipboard!');
+                              }}
+                              style={{ fontSize: '0.7rem', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                              📋 Copy
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            readOnly
+                            value={inviteResult.candidate_email}
+                            onFocus={(e) => e.target.select()}
+                            style={{ width: '100%', fontSize: '0.78rem', padding: '6px 8px', background: '#f8fafc' }}
+                          />
+                        </div>
+
+                        <div>
+                          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '4px' }}>
+                            <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'var(--text-main)' }}>Invite Token</label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                navigator.clipboard.writeText(inviteResult.invite_token);
+                                alert('Copied token to clipboard!');
+                              }}
+                              style={{ fontSize: '0.7rem', color: '#2563eb', background: 'none', border: 'none', cursor: 'pointer', fontWeight: 600 }}
+                            >
+                              📋 Copy
+                            </button>
+                          </div>
+                          <input
+                            type="text"
+                            readOnly
+                            value={inviteResult.invite_token}
+                            onFocus={(e) => e.target.select()}
+                            style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.75rem', padding: '6px 8px', background: '#f8fafc' }}
+                          />
+                        </div>
+                      </div>
+
+                      <button
+                        type="button"
+                        className="btn-secondary"
+                        onClick={() => {
+                          setIsInviteOpen(false);
+                          setInviteResult(null);
+                        }}
+                        style={{ justifyContent: 'center', marginTop: '6px' }}
+                      >
+                        Done
+                      </button>
+                    </div>
+                  );
+                })()}
               </div>
             ) : (
               <form onSubmit={handleInviteSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>

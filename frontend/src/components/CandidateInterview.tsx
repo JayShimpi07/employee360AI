@@ -27,6 +27,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
   const [sessionData, setSessionData] = useState<any>(null);
   const [verifyError, setVerifyError] = useState<string | null>(null);
   const [verifying, setVerifying] = useState(false);
+  const [recentInvites, setRecentInvites] = useState<any[]>([]);
 
   // Hardware Check State
   const [hasCamera, setHasCamera] = useState(false);
@@ -55,6 +56,18 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
   const recognitionRef = useRef<any>(null);
   const audioContextRef = useRef<AudioContext | null>(null);
   const turnsEndRef = useRef<HTMLDivElement | null>(null);
+
+  // Fetch recent active invites on verify step for 1-click test entry
+  useEffect(() => {
+    if (step === 'verify') {
+      fetch('/api/v1/auth/candidate/recent-invites')
+        .then((r) => r.json())
+        .then((data) => {
+          if (Array.isArray(data)) setRecentInvites(data);
+        })
+        .catch(() => {});
+    }
+  }, [step]);
 
   // Auto-verify if initialToken and initialEmail exist
   useEffect(() => {
@@ -88,16 +101,78 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
     }
   };
 
+  // Helper to extract clean token and email from user input or pasted link
+  const sanitizeTokenInput = (val: string) => {
+    let cleanTok = (val || '').trim();
+    let detectedEmail = '';
+
+    if (cleanTok.includes('token=')) {
+      try {
+        const urlObj = cleanTok.startsWith('http')
+          ? new URL(cleanTok)
+          : new URL(`http://dummy.com/${cleanTok.startsWith('?') ? '' : '?'}${cleanTok}`);
+        const t = urlObj.searchParams.get('token');
+        const e = urlObj.searchParams.get('email');
+        if (t) cleanTok = t;
+        if (e) detectedEmail = decodeURIComponent(e);
+      } catch {
+        const m = cleanTok.match(/token=([^&]+)/);
+        if (m) cleanTok = m[1];
+        const emMatch = cleanTok.match(/email=([^&]+)/);
+        if (emMatch) detectedEmail = decodeURIComponent(emMatch[1]);
+      }
+    } else if (cleanTok.includes('&email=')) {
+      const parts = cleanTok.split('&email=');
+      cleanTok = parts[0];
+      if (parts[1]) detectedEmail = decodeURIComponent(parts[1].split('&')[0]);
+    } else if (cleanTok.includes('&')) {
+      cleanTok = cleanTok.split('&')[0];
+    }
+
+    return { cleanTok, detectedEmail };
+  };
+
+  const handleTokenChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value;
+    const { cleanTok, detectedEmail } = sanitizeTokenInput(raw);
+    setToken(cleanTok);
+    if (detectedEmail && (!email || email.trim() === '')) {
+      setEmail(detectedEmail);
+    }
+  };
+
+  const handleTokenPaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const pasted = e.clipboardData.getData('text');
+    if (pasted) {
+      const { cleanTok, detectedEmail } = sanitizeTokenInput(pasted);
+      if (cleanTok !== pasted || detectedEmail) {
+        e.preventDefault();
+        setToken(cleanTok);
+        if (detectedEmail) {
+          setEmail(detectedEmail);
+        }
+      }
+    }
+  };
+
   // 1. Verify Candidate Token
   const handleVerifyToken = async (tok: string, em: string) => {
-    if (!tok || !em) return;
+    const { cleanTok, detectedEmail } = sanitizeTokenInput(tok);
+    const targetToken = cleanTok.trim();
+    const targetEmail = (detectedEmail || em || '').trim();
+
+    if (!targetToken) {
+      setVerifyError('Please enter or paste your invitation token.');
+      return;
+    }
+
     try {
       setVerifying(true);
       setVerifyError(null);
       const res = await fetch('/api/v1/auth/candidate/verify-token', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ token: tok, candidate_email: em }),
+        body: JSON.stringify({ token: targetToken, candidate_email: targetEmail }),
       });
       const data = await res.json();
       if (data.valid && data.session_id) {
@@ -105,7 +180,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
         setStep('hardware');
         startHardwareCheck();
       } else {
-        setVerifyError('Invalid or expired interview invitation token.');
+        setVerifyError(data.error_message || 'Invalid or expired interview invitation token.');
       }
     } catch (err: any) {
       setVerifyError(err.message || 'Token verification failed.');
@@ -113,6 +188,7 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
       setVerifying(false);
     }
   };
+
 
   // 2. Hardware Permissions & Audio Visualizer
   const startHardwareCheck = async () => {
@@ -412,17 +488,88 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
             </div>
           )}
 
+          {recentInvites.length > 0 && (
+            <div style={{
+              background: '#f8fafc',
+              border: '1px solid #e2e8f0',
+              padding: '14px',
+              borderRadius: '8px',
+              marginBottom: '18px',
+              textAlign: 'left'
+            }}>
+              <div style={{
+                fontSize: '0.78rem',
+                fontWeight: 700,
+                color: '#475569',
+                textTransform: 'uppercase',
+                letterSpacing: '0.04em',
+                marginBottom: '8px'
+              }}>
+                ⚡ Quick Fill Active Invite (1-Click Test)
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {recentInvites.map((inv) => (
+                  <button
+                    key={inv.session_id}
+                    type="button"
+                    onClick={() => {
+                      setToken(inv.invite_token);
+                      setEmail(inv.candidate_email);
+                      handleVerifyToken(inv.invite_token, inv.candidate_email);
+                    }}
+                    style={{
+                      textAlign: 'left',
+                      padding: '8px 12px',
+                      background: '#ffffff',
+                      border: '1px solid #cbd5e1',
+                      borderRadius: '6px',
+                      cursor: 'pointer',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      transition: 'all 0.15s ease'
+                    }}
+                    onMouseEnter={(e) => {
+                      e.currentTarget.style.borderColor = '#2563eb';
+                      e.currentTarget.style.background = '#eff6ff';
+                    }}
+                    onMouseLeave={(e) => {
+                      e.currentTarget.style.borderColor = '#cbd5e1';
+                      e.currentTarget.style.background = '#ffffff';
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: '0.86rem', color: '#0f172a' }}>
+                        {inv.candidate_name}
+                      </div>
+                      <div style={{ fontSize: '0.75rem', color: '#64748b', fontFamily: 'monospace' }}>
+                        {inv.candidate_email}
+                      </div>
+                    </div>
+                    <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>
+                      {inv.job_title} &bull; Enter &rarr;
+                    </span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          )}
+
           <form onSubmit={(e) => { e.preventDefault(); handleVerifyToken(token, email); }} style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Invitation Token</label>
               <input
                 type="text"
                 value={token}
-                onChange={(e) => setToken(e.target.value)}
-                placeholder="Paste your invitation token"
+                onChange={handleTokenChange}
+                onPaste={handleTokenPaste}
+                placeholder="Paste invitation token or full interview URL"
                 required
-                style={{ width: '100%', fontFamily: 'monospace' }}
+                style={{ width: '100%', fontFamily: 'monospace', fontSize: '0.85rem' }}
               />
+              <span style={{ display: 'block', fontSize: '0.74rem', color: '#64748b', marginTop: '4px' }}>
+                💡 Tip: You can paste the entire invitation URL or token fragment here; email will auto-fill.
+              </span>
             </div>
             <div>
               <label style={{ display: 'block', fontSize: '0.82rem', fontWeight: 600, marginBottom: '6px', color: 'var(--text-main)' }}>Candidate Email</label>

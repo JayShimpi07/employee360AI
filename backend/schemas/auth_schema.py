@@ -36,3 +36,5 @@ class CandidateTokenVerifyResponse(BaseModel):
     candidate_name: Optional[str] = None
     job_title: Optional[str] = None
     access_token: Optional[str] = None
+    error_message: Optional[str] = None
+
