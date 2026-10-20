@@ -52,6 +52,7 @@ async def get_session_report(
         "job_title": report.session.job.title,
         "overall_score": report.overall_score,
         "evidence_sufficiency_ratio": report.evidence_sufficiency_ratio,
+        "proctoring_integrity_score": report.proctoring_integrity_score,
         "competency_breakdown": report.competency_scores_json,
         "resume_claims": resume_claims,
         "recommendation_narrative": report.recommendation_narrative,
@@ -79,6 +80,7 @@ async def list_reports(
             "job_title": r.session.job.title,
             "overall_score": r.overall_score,
             "evidence_sufficiency_ratio": r.evidence_sufficiency_ratio,
+            "proctoring_integrity_score": r.proctoring_integrity_score,
             "human_override_status": r.human_override_status,
             "is_finalized": r.is_finalized,
             "created_at": r.created_at.isoformat()

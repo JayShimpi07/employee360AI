@@ -34,6 +34,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+import os
+from fastapi.staticfiles import StaticFiles
+
+# Mount storage directory for proctoring snapshot frames
+os.makedirs("storage/proctoring", exist_ok=True)
+app.mount("/storage", StaticFiles(directory="storage"), name="storage")
+
 # Include v1 API routes & WebSocket routes
 app.include_router(api_router)
 app.include_router(ws_router)

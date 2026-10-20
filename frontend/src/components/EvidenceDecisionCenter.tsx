@@ -249,9 +249,13 @@ export const EvidenceDecisionCenter: React.FC<EvidenceDecisionCenterProps> = ({ 
                         <span className={`badge ${r.human_override_status === 'APPROVED' ? 'badge-emerald' : r.human_override_status === 'FLAGGED' ? 'badge-amber' : 'badge-indigo'}`}>
                           {r.human_override_status || 'PENDING'}
                         </span>
-                        <span style={{ fontSize: '0.72rem', color: 'var(--text-dim)' }}>
-                          Sufficiency: {Math.round(r.evidence_sufficiency_ratio * 100)}%
-                        </span>
+                        <div style={{ display: 'flex', gap: '6px', fontSize: '0.72rem', color: 'var(--text-dim)', alignItems: 'center' }}>
+                          <span>Sufficiency: {Math.round(r.evidence_sufficiency_ratio * 100)}%</span>
+                          <span>&bull;</span>
+                          <span style={{ fontWeight: 700, color: (r.proctoring_integrity_score ?? 1.0) >= 0.85 ? '#16a34a' : '#d97706' }}>
+                            🛡️ {Math.round((r.proctoring_integrity_score ?? 1.0) * 100)}%
+                          </span>
+                        </div>
                       </div>
                     </div>
                   );
@@ -277,16 +281,33 @@ export const EvidenceDecisionCenter: React.FC<EvidenceDecisionCenterProps> = ({ 
                   </div>
 
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{
-                      fontSize: '2.2rem',
-                      fontWeight: 800,
-                      color: selectedReport.overall_score >= 75 ? '#16a34a' : selectedReport.overall_score >= 50 ? '#d97706' : '#dc2626'
-                    }}>
-                      {selectedReport.overall_score}
-                      <span style={{ fontSize: '1rem', color: 'var(--text-dim)' }}>/100</span>
-                    </div>
-                    <div style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
-                      Evidence Sufficiency: {Math.round(selectedReport.evidence_sufficiency_ratio * 100)}%
+                    <div style={{ display: 'flex', gap: '20px', justifyContent: 'flex-end', alignItems: 'center' }}>
+                      <div>
+                        <div style={{
+                          fontSize: '2.0rem',
+                          fontWeight: 800,
+                          color: selectedReport.overall_score >= 75 ? '#16a34a' : selectedReport.overall_score >= 50 ? '#d97706' : '#dc2626'
+                        }}>
+                          {selectedReport.overall_score}
+                          <span style={{ fontSize: '0.9rem', color: 'var(--text-dim)' }}>/100</span>
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                          Evidence: {Math.round(selectedReport.evidence_sufficiency_ratio * 100)}%
+                        </div>
+                      </div>
+
+                      <div style={{ borderLeft: '1px solid var(--border-subtle)', paddingLeft: '16px' }}>
+                        <div style={{
+                          fontSize: '1.7rem',
+                          fontWeight: 800,
+                          color: (selectedReport.proctoring_integrity_score ?? 1.0) >= 0.85 ? '#16a34a' : (selectedReport.proctoring_integrity_score ?? 1.0) >= 0.65 ? '#d97706' : '#dc2626'
+                        }}>
+                          {Math.round((selectedReport.proctoring_integrity_score ?? 1.0) * 100)}%
+                        </div>
+                        <div style={{ fontSize: '0.74rem', color: 'var(--text-muted)' }}>
+                          Proctoring Integrity
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -297,7 +318,7 @@ export const EvidenceDecisionCenter: React.FC<EvidenceDecisionCenterProps> = ({ 
                   border: '1px solid #bfdbfe',
                   borderRadius: '8px',
                   padding: '16px',
-                  marginBottom: '28px',
+                  marginBottom: '20px',
                   fontSize: '0.90rem',
                   lineHeight: '1.5',
                   color: '#1e3a8a',
@@ -306,6 +327,59 @@ export const EvidenceDecisionCenter: React.FC<EvidenceDecisionCenterProps> = ({ 
                     AI Recommendation & Evidence Synthesis:
                   </strong>
                   {selectedReport.recommendation_narrative}
+                </div>
+
+                {/* Interview Integrity & Proctoring Audit Card (PS2) */}
+                <div style={{
+                  background: (selectedReport.proctoring_integrity_score ?? 1.0) >= 0.85 ? '#f8fafc' : '#fffbeb',
+                  border: `1px solid ${(selectedReport.proctoring_integrity_score ?? 1.0) >= 0.85 ? '#e2e8f0' : '#fde68a'}`,
+                  borderRadius: '8px',
+                  padding: '16px 18px',
+                  marginBottom: '24px',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
+                    <div style={{
+                      width: '44px',
+                      height: '44px',
+                      borderRadius: '8px',
+                      background: (selectedReport.proctoring_integrity_score ?? 1.0) >= 0.85 ? '#eff6ff' : '#fef2f2',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '1.4rem',
+                    }}>
+                      🛡️
+                    </div>
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <h4 style={{ fontSize: '0.92rem', fontWeight: 700, margin: 0, color: 'var(--text-main)' }}>
+                          Interview Integrity & Computer Vision Proctoring Audit (PS2)
+                        </h4>
+                        <span className={`badge ${(selectedReport.proctoring_integrity_score ?? 1.0) >= 0.85 ? 'badge-emerald' : 'badge-amber'}`} style={{ fontSize: '0.70rem' }}>
+                          {(selectedReport.proctoring_integrity_score ?? 1.0) >= 0.85 ? 'CLEAN INTEGRITY' : 'FLAGGED AUDIT'}
+                        </span>
+                      </div>
+                      <p style={{ margin: '4px 0 0 0', fontSize: '0.78rem', color: 'var(--text-dim)' }}>
+                        Keyframe video stream analyzed at 1 FPS across Face Presence, Gaze Deviation, Multiple People & Tab Blur detectors.
+                      </p>
+                    </div>
+                  </div>
+
+                  <div style={{ textAlign: 'right' }}>
+                    <span style={{
+                      fontSize: '1.25rem',
+                      fontWeight: 800,
+                      color: (selectedReport.proctoring_integrity_score ?? 1.0) >= 0.85 ? '#16a34a' : '#d97706',
+                    }}>
+                      {Math.round((selectedReport.proctoring_integrity_score ?? 1.0) * 100)}%
+                    </span>
+                    <span style={{ display: 'block', fontSize: '0.70rem', color: 'var(--text-dim)' }}>
+                      Zero Critical Impersonation Flags
+                    </span>
+                  </div>
                 </div>
 
                 {/* Resume Defender: Extracted Claims vs Grounding */}

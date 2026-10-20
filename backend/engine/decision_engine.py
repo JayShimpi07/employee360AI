@@ -82,6 +82,21 @@ class ProofCarryingDecisionEngine:
             f"Recommendation: {recommendation_tier}"
         )
 
+        # 4b. Compute Proctoring Integrity Score (Phase 4)
+        from backend.models.models import ProctoringEvent
+        from backend.engine.proctoring import ProctoringEngine
+        proc_events_res = await db.execute(
+            select(ProctoringEvent).where(ProctoringEvent.session_id == session_id)
+        )
+        proc_events = proc_events_res.scalars().all()
+        proc_summary = ProctoringEngine.calculate_session_integrity_score([
+            {"anomaly_type": e.anomaly_type.value} for e in proc_events
+        ])
+        proctoring_score = proc_summary["integrity_score"]
+
+        if proc_summary["is_flagged"] and proc_summary["total_anomalies"] > 0:
+            narrative += f" [Proctoring Audit: Integrity score {int(proctoring_score * 100)}% with {proc_summary['total_anomalies']} visual/environmental anomalies recorded.]"
+
         # 5. Persist or Update EvaluationReport
         report_res = await db.execute(
             select(EvaluationReport).where(EvaluationReport.session_id == session_id)
@@ -94,9 +109,9 @@ class ProofCarryingDecisionEngine:
                 overall_score=overall_score,
                 competency_scores_json=competency_scores,
                 evidence_sufficiency_ratio=sufficiency_ratio,
-                proctoring_integrity_score=1.0, # Will connect to PS2 in Phase 4
+                proctoring_integrity_score=proctoring_score,
                 recommendation_narrative=narrative,
-                human_override_status="PENDING_REVIEW",
+                human_override_status="FLAGGED" if proc_summary["is_flagged"] else "PENDING_REVIEW",
                 is_finalized=False
             )
             db.add(report)
@@ -104,6 +119,7 @@ class ProofCarryingDecisionEngine:
             report.overall_score = overall_score
             report.competency_scores_json = competency_scores
             report.evidence_sufficiency_ratio = sufficiency_ratio
+            report.proctoring_integrity_score = proctoring_score
             report.recommendation_narrative = narrative
 
         await db.commit()
@@ -115,6 +131,8 @@ class ProofCarryingDecisionEngine:
             "candidate_name": session.candidate_name,
             "overall_score": report.overall_score,
             "evidence_sufficiency_ratio": report.evidence_sufficiency_ratio,
+            "proctoring_integrity_score": report.proctoring_integrity_score,
+            "proctoring_summary": proc_summary,
             "competency_breakdown": report.competency_scores_json,
             "resume_claims": resume_claims,
             "recommendation_narrative": report.recommendation_narrative,

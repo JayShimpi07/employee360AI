@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { api } from '../api';
 
 interface CandidateInterviewProps {
   initialToken?: string;
@@ -43,6 +44,12 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
   const [isRecording, setIsRecording] = useState(false);
   const [wsConnected, setWsConnected] = useState(false);
 
+  // Proctoring Pipeline State (PS2)
+  const [proctorStatus, setProctorStatus] = useState<string>('Active (1 FPS)');
+  const pipVideoRef = useRef<HTMLVideoElement | null>(null);
+  const proctorCanvasRef = useRef<HTMLCanvasElement | null>(null);
+  const proctorIntervalRef = useRef<any>(null);
+
   // Refs
   const wsRef = useRef<WebSocket | null>(null);
   const recognitionRef = useRef<any>(null);
@@ -71,6 +78,10 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
   }, []);
 
   const stopMediaStream = () => {
+    if (proctorIntervalRef.current) {
+      clearInterval(proctorIntervalRef.current);
+      proctorIntervalRef.current = null;
+    }
     if (mediaStreamRef.current) {
       mediaStreamRef.current.getTracks().forEach((track) => track.stop());
       mediaStreamRef.current = null;
@@ -198,6 +209,45 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
 
     // Initialize Web Speech Recognition
     initSpeechRecognition();
+
+    // Start 1 FPS Video Keyframe Proctoring & Focus Monitoring (PS2)
+    startProctoringStream(sessionData.session_id);
+  };
+
+  const startProctoringStream = (sessionId: string) => {
+    // 1. Browser Event Monitoring
+    const handleVisibility = () => {
+      if (document.hidden) {
+        api.recordBrowserEvent(sessionId, 'tab_switch', Date.now()).catch(() => {});
+      }
+    };
+    const handleBlur = () => {
+      api.recordBrowserEvent(sessionId, 'window_blur', Date.now()).catch(() => {});
+    };
+    document.addEventListener('visibilitychange', handleVisibility);
+    window.addEventListener('blur', handleBlur);
+
+    // 2. 1 FPS Keyframe Sampler
+    proctorIntervalRef.current = setInterval(() => {
+      if (!pipVideoRef.current || !proctorCanvasRef.current || pipVideoRef.current.readyState < 2) return;
+      const v = pipVideoRef.current;
+      const c = proctorCanvasRef.current;
+      const ctx = c.getContext('2d');
+      if (!ctx) return;
+      c.width = 320;
+      c.height = 240;
+      ctx.drawImage(v, 0, 0, 320, 240);
+      const b64 = c.toDataURL('image/jpeg', 0.65);
+      api.analyzeProctoringFrame(sessionId, b64, Date.now())
+        .then((res) => {
+          if (res.is_anomalous) {
+            setProctorStatus('Camera Notice: Please re-center');
+          } else {
+            setProctorStatus('Active (1 FPS)');
+          }
+        })
+        .catch(() => {});
+    }, 1200);
   };
 
   // Audio Playback
@@ -622,10 +672,11 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
               </p>
             </div>
 
-            {/* Candidate PIP Webcam Box */}
+            {/* Candidate PIP Webcam Box with Real-Time Proctoring HUD */}
             <div className="glass-panel" style={{ height: '210px', overflow: 'hidden', position: 'relative', background: '#0f172a' }}>
               <video
                 ref={(el) => {
+                  pipVideoRef.current = el;
                   if (el && mediaStreamRef.current && el.srcObject !== mediaStreamRef.current) {
                     el.srcObject = mediaStreamRef.current;
                   }
@@ -635,6 +686,20 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
                 muted
                 style={{ width: '100%', height: '100%', objectFit: 'cover' }}
               />
+              <canvas ref={proctorCanvasRef} style={{ display: 'none' }} />
+              
+              {/* Security Shield HUD Badge */}
+              <div style={{
+                position: 'absolute',
+                top: '10px',
+                right: '10px',
+                zIndex: 10,
+              }}>
+                <span className={`badge ${proctorStatus.includes('Notice') ? 'badge-amber' : 'badge-emerald'}`} style={{ fontSize: '0.68rem', backdropFilter: 'blur(4px)' }}>
+                  🛡️ {proctorStatus}
+                </span>
+              </div>
+
               <div style={{
                 position: 'absolute',
                 bottom: '10px',

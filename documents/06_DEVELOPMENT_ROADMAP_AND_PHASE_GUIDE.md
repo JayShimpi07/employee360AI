@@ -88,14 +88,14 @@ To enable rapid iteration and eliminate containerization friction for the team, 
 
 ---
 
-### Phase 4: Interview Integrity & Proctoring (PS2)
-* [ ] Browser canvas video keyframe sampler (1 FPS) sent over WebSocket.
-* [ ] Anomaly detection pipeline (OpenCV + MediaPipe):
+### Phase 4: Interview Integrity & Proctoring (PS2) (100% Completed)
+* [x] Browser canvas video keyframe sampler (1 FPS) and focus loss listener (`frontend/src/components/CandidateInterview.tsx`).
+* [x] Anomaly detection pipeline (`backend/engine/proctoring.py` & `backend/api/v1/proctoring.py`):
   - Face count (absence or multiple people).
   - Head pose and gaze deviation estimator.
-  - Secondary voice activity detector.
-* [ ] Timestamped proctoring event logger with frame snapshots.
-* [ ] Build **Adversarial Proctoring Lab** UI to run repeatable synthetic test scenarios.
+  - Secondary voice activity and window blur detectors.
+* [x] Timestamped proctoring event logger with frame snapshots saved to `/storage/proctoring/` and integrated into `EvaluationReport.proctoring_integrity_score`.
+* [x] Built **Adversarial Proctoring Lab** UI (`frontend/src/components/AdversarialProctoringLab.tsx`) with live webcam HUD, synthetic attack simulation, and DOC-05 empirical benchmark matrix.
 
 ---
 

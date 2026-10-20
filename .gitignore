@@ -33,9 +33,11 @@ yarn-error.log*
 storage/media/*
 storage/snapshots/*
 storage/transcripts/*
+storage/proctoring/*
 !storage/media/.gitkeep
 !storage/snapshots/.gitkeep
 !storage/transcripts/.gitkeep
+!storage/proctoring/.gitkeep
 
 # IDE & OS
 .vscode/

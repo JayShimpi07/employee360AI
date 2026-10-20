@@ -5,8 +5,8 @@ interface NavbarProps {
   currentUser: User | null;
   onOpenLogin: () => void;
   onLogout: () => void;
-  activeTab: 'dashboard' | 'studio' | 'interview' | 'evidence';
-  setActiveTab: (tab: 'dashboard' | 'studio' | 'interview' | 'evidence') => void;
+  activeTab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab';
+  setActiveTab: (tab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -121,7 +121,24 @@ export const Navbar: React.FC<NavbarProps> = ({
             transition: 'all 0.15s ease',
           }}
         >
-          Evidence & Decision Center ⚖️
+          Evidence & Decisions ⚖️
+        </button>
+        <button
+          onClick={() => setActiveTab('lab')}
+          style={{
+            background: activeTab === 'lab' ? '#ffffff' : 'transparent',
+            color: activeTab === 'lab' ? 'var(--accent-primary)' : 'var(--text-muted)',
+            border: activeTab === 'lab' ? '1px solid #e2e8f0' : '1px solid transparent',
+            borderRadius: '6px',
+            padding: '7px 16px',
+            fontWeight: activeTab === 'lab' ? 700 : 500,
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            boxShadow: activeTab === 'lab' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          Proctoring Lab 🛡️
         </button>
         <button
           onClick={() => setActiveTab('interview')}

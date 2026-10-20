@@ -112,4 +112,30 @@ export const api = {
       body: JSON.stringify({ query, top_k, threshold }),
     });
   },
+
+  // Interview Integrity & Proctoring (PS2)
+  analyzeProctoringFrame: async (sessionId: string, frameData: string, timestampOffsetMs: number) => {
+    return apiRequest<any>(`/proctoring/sessions/${sessionId}/analyze-frame`, {
+      method: 'POST',
+      body: JSON.stringify({ frame_data: frameData, timestamp_offset_ms: timestampOffsetMs }),
+    });
+  },
+  recordBrowserEvent: async (sessionId: string, event: string, timestampOffsetMs: number) => {
+    return apiRequest<any>(`/proctoring/sessions/${sessionId}/browser-event`, {
+      method: 'POST',
+      body: JSON.stringify({ event, timestamp_offset_ms: timestampOffsetMs }),
+    });
+  },
+  getSessionProctoringSummary: async (sessionId: string) => {
+    return apiRequest<any>(`/proctoring/sessions/${sessionId}/summary`);
+  },
+  simulateAdversarialProctoring: async (scenario: string) => {
+    return apiRequest<any>('/proctoring/lab/simulate', {
+      method: 'POST',
+      body: JSON.stringify({ scenario }),
+    });
+  },
+  getProctoringBenchmarks: async () => {
+    return apiRequest<any[]>('/proctoring/lab/benchmarks');
+  },
 };
