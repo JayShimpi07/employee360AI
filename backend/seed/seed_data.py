@@ -6,9 +6,9 @@ from backend.core.security import get_password_hash
 from backend.models.models import (
     User, WorkflowDefinition, WorkflowVersion, Job, Competency,
     InterviewSession, TranscriptTurn, EvaluationReport,
-    KnowledgeDocument, DocumentChunk
+    KnowledgeDocument, DocumentChunk, OnboardingTask
 )
-from backend.models.enums import UserRole, WorkflowCategory, SessionStatus, TurnSpeaker
+from backend.models.enums import UserRole, WorkflowCategory, SessionStatus, TurnSpeaker, TaskStatus
 from backend.engine.compiler import HRAgentCompiler
 from backend.engine.decision_engine import ProofCarryingDecisionEngine
 from backend.engine.rag import GroundedRAGEngine
@@ -42,16 +42,43 @@ async def seed():
             print("Added default HR Reviewer: reviewer@zensar.com")
 
         emp_res = await db.execute(select(User).where(User.email == "alex.smith@zensar.com"))
-        if not emp_res.scalar_one_or_none():
-            db.add(User(
+        emp_user = emp_res.scalar_one_or_none()
+        if not emp_user:
+            emp_user = User(
                 email="alex.smith@zensar.com",
                 hashed_password=get_password_hash("employee123"),
                 full_name="Alex Smith (Employee)",
                 role=UserRole.EMPLOYEE
-            ))
+            )
+            db.add(emp_user)
             print("Added default Employee: alex.smith@zensar.com")
-
         await db.flush()
+
+        task_check = await db.execute(select(OnboardingTask).where(OnboardingTask.employee_id == emp_user.id))
+        if not task_check.scalars().all():
+            default_tasks = [
+                OnboardingTask(
+                    employee_id=emp_user.id,
+                    task_title="W-4 / Tax Declaration Submission",
+                    description="Select your statutory tax regime (New vs Old) and submit your formal salary withholding declaration.",
+                    status=TaskStatus.PENDING
+                ),
+                OnboardingTask(
+                    employee_id=emp_user.id,
+                    task_title="Developer Laptop Selection",
+                    description="Select standard engineering workstation tier (Apple MacBook Pro 16 M3 Max or ThinkPad P16).",
+                    status=TaskStatus.PENDING
+                ),
+                OnboardingTask(
+                    employee_id=emp_user.id,
+                    task_title="Information Security Policy Sign-off",
+                    description="Review and digitally sign the Zensar Global Information Security & SOC-2 Compliance Policy.",
+                    status=TaskStatus.PENDING
+                ),
+            ]
+            for t in default_tasks:
+                db.add(t)
+            print("Seeded 3 Onboarding Tasks for Alex Smith")
 
         # 2. Seed Workflows
         wf_res = await db.execute(select(WorkflowDefinition).where(WorkflowDefinition.name == "Software Engineer Hiring Interview"))
@@ -354,6 +381,37 @@ async def seed():
                     metadata_json={"source": "benefits_policy", "category": "pto_wellness"}
                 ))
             print("Seeded Knowledge Document: Zensar Remote Work & Benefits Policy with vector chunks")
+
+        it_res = await db.execute(select(KnowledgeDocument).where(KnowledgeDocument.title == "Zensar IT Hardware, Asset Management & Security Policy"))
+        if not it_res.scalar_one_or_none():
+            it_doc = KnowledgeDocument(
+                title="Zensar IT Hardware, Asset Management & Security Policy",
+                category="IT_SECURITY",
+                source_filename="zensar_it_security_policy.md",
+                version=1
+            )
+            db.add(it_doc)
+            await db.flush()
+
+            it_content = (
+                "Zensar Engineering IT Asset Management and Information Security Standards:\n"
+                "1. Developer Workstation Provisioning: Engineering team members are entitled to standard Tier 1 hardware: "
+                "Apple MacBook Pro 16 M3 Max or Lenovo ThinkPad P16 Workstation with 64GB RAM. Deliveries occur within 48 hours of ticket issuance.\n"
+                "2. SOC-2 Compliance and Encryption: All corporate workstations must enforce FileVault / BitLocker full-disk encryption, "
+                "EDR endpoint protection agents, and mandatory screen-lock after 5 minutes of inactivity.\n"
+                "3. Policy Acknowledgment: All new hires must sign the Information Security Agreement within their first week."
+            )
+            chunks = GroundedRAGEngine.chunk_document(it_content, chunk_size=200, overlap=30)
+            for c in chunks:
+                emb = GroundedRAGEngine.generate_embedding(c["content"])
+                db.add(DocumentChunk(
+                    document_id=it_doc.id,
+                    chunk_index=c["chunk_index"],
+                    content=c["content"],
+                    embedding_json=emb,
+                    metadata_json={"source": "it_security_policy", "category": "it_security"}
+                ))
+            print("Seeded Knowledge Document: Zensar IT Hardware & Security Policy with vector chunks")
 
         await db.commit()
         print("Database seed completed successfully!")

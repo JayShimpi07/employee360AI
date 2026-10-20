@@ -58,3 +58,54 @@ export interface InviteCandidateResponse {
   invite_url: string;
   invite_token: string;
 }
+
+export interface OnboardingTaskItem {
+  id: string;
+  title: string;
+  description: string;
+  status: 'PENDING' | 'SUBMITTED' | 'VERIFIED' | 'REJECTED';
+  completed_at?: string | null;
+  due_date?: string | null;
+}
+
+export interface OnboardingTasksResponse {
+  employee_id: string;
+  employee_name: string;
+  total_tasks: number;
+  verified_tasks: number;
+  completion_percentage: number;
+  tasks: OnboardingTaskItem[];
+}
+
+export interface CaseActionItem {
+  id: string;
+  action_name: string;
+  input_payload: Record<string, any>;
+  result_payload: Record<string, any>;
+  receipt_hash?: string | null;
+  verified: boolean;
+  created_at: string;
+}
+
+export interface HRCaseItem {
+  id: string;
+  category: string;
+  title: string;
+  description: string;
+  status: string;
+  resolution_notes?: string | null;
+  created_at: string;
+  actions: CaseActionItem[];
+}
+
+export interface HarperChatResponse {
+  reply: string;
+  action_executed: boolean;
+  action_name?: string;
+  receipt_hash?: string;
+  verification_status?: string;
+  details?: Record<string, any>;
+  grounded: boolean;
+  citations: Array<{ source: string; section?: string; snippet: string; similarity?: number }>;
+  guardrail_status?: string;
+}

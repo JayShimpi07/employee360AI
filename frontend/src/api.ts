@@ -1,3 +1,5 @@
+import { OnboardingTasksResponse, HRCaseItem, HarperChatResponse } from './types';
+
 const API_BASE = '/api/v1';
 
 export function getStoredToken(): string | null {
@@ -137,5 +139,31 @@ export const api = {
   },
   getProctoringBenchmarks: async () => {
     return apiRequest<any[]>('/proctoring/lab/benchmarks');
+  },
+
+  // Employee Self-Service & Autonomous Workflows (Phase 5)
+  getOnboardingTasks: async () => {
+    return apiRequest<OnboardingTasksResponse>('/employee/onboarding/tasks');
+  },
+  submitOnboardingTask: async (taskId: string, payload: Record<string, any> = {}) => {
+    return apiRequest<any>(`/employee/onboarding/tasks/${taskId}/submit`, {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    });
+  },
+  getEmployeeCases: async () => {
+    return apiRequest<HRCaseItem[]>('/employee/cases');
+  },
+  executeEmployeeAction: async (actionName: string, payload: Record<string, any> = {}) => {
+    return apiRequest<any>('/employee/cases/execute-action', {
+      method: 'POST',
+      body: JSON.stringify({ action_name: actionName, payload }),
+    });
+  },
+  chatWithHarper: async (message: string) => {
+    return apiRequest<HarperChatResponse>('/employee/assistant/chat', {
+      method: 'POST',
+      body: JSON.stringify({ message }),
+    });
   },
 };

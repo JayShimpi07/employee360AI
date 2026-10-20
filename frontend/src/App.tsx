@@ -5,6 +5,7 @@ import { WorkflowStudio } from './components/WorkflowStudio';
 import { CandidateInterview } from './components/CandidateInterview';
 import { EvidenceDecisionCenter } from './components/EvidenceDecisionCenter';
 import { AdversarialProctoringLab } from './components/AdversarialProctoringLab';
+import { EmployeePortal } from './components/EmployeePortal';
 import { LoginModal } from './components/LoginModal';
 import { api, getStoredToken, setStoredToken } from './api';
 import { User } from './types';
@@ -12,7 +13,7 @@ import { User } from './types';
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee'>('dashboard');
   const [interviewToken, setInterviewToken] = useState<string>('');
   const [interviewEmail, setInterviewEmail] = useState<string>('');
 
@@ -62,6 +63,8 @@ export const App: React.FC = () => {
           <EvidenceDecisionCenter currentUser={currentUser} />
         ) : activeTab === 'lab' ? (
           <AdversarialProctoringLab />
+        ) : activeTab === 'employee' ? (
+          <EmployeePortal />
         ) : (
           <CandidateInterview
             initialToken={interviewToken}

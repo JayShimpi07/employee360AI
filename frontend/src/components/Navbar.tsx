@@ -5,8 +5,8 @@ interface NavbarProps {
   currentUser: User | null;
   onOpenLogin: () => void;
   onLogout: () => void;
-  activeTab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab';
-  setActiveTab: (tab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab') => void;
+  activeTab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee';
+  setActiveTab: (tab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -156,6 +156,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           }}
         >
           Candidate Portal 🎙️
+        </button>
+        <button
+          onClick={() => setActiveTab('employee')}
+          style={{
+            background: activeTab === 'employee' ? '#ffffff' : 'transparent',
+            color: activeTab === 'employee' ? 'var(--accent-primary)' : 'var(--text-muted)',
+            border: activeTab === 'employee' ? '1px solid #e2e8f0' : '1px solid transparent',
+            borderRadius: '6px',
+            padding: '7px 16px',
+            fontWeight: activeTab === 'employee' ? 700 : 500,
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            boxShadow: activeTab === 'employee' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          Employee Portal 💼
         </button>
       </div>
 

@@ -99,14 +99,24 @@ To enable rapid iteration and eliminate containerization friction for the team, 
 
 ---
 
-### Phase 5: Autonomous Workflows (Onboarding & Employee Assistance)
-* [ ] Controlled Mock Action Registry (`request_leave`, `submit_tax_form`, `it_hardware_ticket`).
-* [ ] Two-phase action execution and state verification engine.
-* [ ] Employee Self-Service Portal:
-  - Conversational HR policy inquiry with grounded citations.
-  - Autonomous case creation, action execution, and verification.
-* [ ] Employee Onboarding Portal:
-  - Checklist tracking, document submission verification, proactive reminders.
+### Phase 5: Autonomous Workflows (Onboarding & Employee Assistance) (100% Completed)
+* [x] **Controlled Mock Action Registry & Two-Phase Verification Engine** (`backend/engine/action_registry.py`):
+  - Pre-flight policy & quota validation (`request_leave`, `submit_tax_form`, `it_hardware_ticket`, `sign_security_policy`).
+  - Atomic database state mutation with post-state verification.
+  - Deterministic SHA-256 cryptographic receipt hash generation.
+  - Non-repudiation logging in `audit_logs` tamper-evident ledger.
+* [x] **Employee Self-Service & Autonomous REST API** (`backend/api/v1/employee.py`):
+  - `GET /api/v1/employee/onboarding/tasks`: New hire checklist progress and SLA monitoring.
+  - `POST /api/v1/employee/onboarding/tasks/{task_id}/submit`: Document submission with autonomous verification.
+  - `GET /api/v1/employee/cases`: Autonomous HR case histories and cryptographic receipt retrieval.
+  - `POST /api/v1/employee/cases/execute-action`: Direct two-phase execution endpoint.
+  - `POST /api/v1/employee/assistant/chat`: Conversational AI Assistant ("Harper") combining Grounded RAG knowledge citations and intent-based two-phase action triggers.
+* [x] **Employee Self-Service Portal UI** (`frontend/src/components/EmployeePortal.tsx`):
+  - Executive Enterprise White Theme design.
+  - Interactive Harper Chat with quick-prompt chips, Grounded RAG citations, and Action Execution receipt badges.
+  - New Hire Onboarding Checklist with progress bar and 1-click submission dialogs.
+  - Support Cases & Cryptographic Audit Receipts explorer with SHA-256 copy actions.
+* [x] **Automated Regression Suite**: 26 of 26 tests passing (`tests/test_autonomous_workflows.py`).
 
 ---
 
