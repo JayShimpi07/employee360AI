@@ -77,14 +77,14 @@ To enable rapid iteration and eliminate containerization friction for the team, 
 
 ---
 
-### Phase 3: Agent Intelligence & Evidence Sufficiency Engine
-* [ ] Ingest HR knowledge documents into chunked vector store.
-* [ ] "Defend Your Resume" claim extractor: parses candidate resume text and extracts key claims.
-* [ ] **Evidence Sufficiency Engine**:
-  - Evaluates candidate answers against competency rubrics.
-  - Dynamically triggers targeted follow-up probes when confidence $< 0.70$.
-* [ ] Proof-carrying candidate evaluation report generator.
-* [ ] HR Reviewer Dashboard: interactive report viewer with clickable transcript citations.
+### Phase 3: Agent Intelligence & Evidence Sufficiency Engine (100% Completed)
+* [x] Ingest HR knowledge documents into chunked vector store (384-dimensional dense semantic embeddings in `backend/engine/rag.py`).
+* [x] "Defend Your Resume" claim extractor: parses candidate resume text into verifiable technical claims (`backend/engine/resume_defender.py`).
+* [x] **Evidence Sufficiency Engine**:
+  - Evaluates candidate answers against competency rubrics with verbatim quote citations (`backend/engine/evidence_engine.py`).
+  - Dynamically triggers targeted follow-up probes when confidence $< 0.70$ (`backend/engine/orchestrator.py`).
+* [x] Proof-carrying candidate evaluation report generator with sufficiency ratio (`backend/engine/decision_engine.py`).
+* [x] HR Reviewer Dashboard & Decision Center: interactive report viewer with clickable transcript citations modal and Grounded RAG Knowledge Base explorer (`frontend/src/components/EvidenceDecisionCenter.tsx`).
 
 ---
 

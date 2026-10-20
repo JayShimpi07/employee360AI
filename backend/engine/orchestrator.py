@@ -9,6 +9,7 @@ from backend.models.models import (
 )
 from backend.models.enums import TurnSpeaker, SessionStatus
 from backend.core.config import settings
+from backend.engine.rag import GroundedRAGEngine
 
 class TurnOrchestrator:
     """
@@ -167,6 +168,25 @@ class TurnOrchestrator:
         }
 
     @classmethod
+    def _evaluate_answer_confidence(cls, answer: str, competency: Optional[Competency]) -> float:
+        """
+        Evaluates candidate answer against competency rubric embedding to calculate real-time sufficiency.
+        """
+        if not competency or not answer:
+            return 0.5
+        rubric_str = f"{competency.name}. {competency.description}. "
+        if isinstance(competency.rubric_json, dict):
+            rubric_str += " ".join(str(v) for v in competency.rubric_json.values())
+        sim = GroundedRAGEngine.cosine_similarity(
+            GroundedRAGEngine.generate_embedding(rubric_str),
+            GroundedRAGEngine.generate_embedding(answer)
+        )
+        words = len(answer.strip().split())
+        length_factor = min(1.0, words / 25.0)
+        confidence = min(1.0, (sim * 0.6 + length_factor * 0.4) * 1.6)
+        return round(confidence, 2)
+
+    @classmethod
     def _generate_adaptive_response(
         cls,
         candidate_text: str,
@@ -179,15 +199,9 @@ class TurnOrchestrator:
         resume_text: Optional[str]
     ) -> Tuple[str, bool]:
         """
-        Determines the next adaptive question based on conversation progression.
+        Determines the next adaptive question based on conversation progression and
+        real-time evidence sufficiency gating.
         """
-        # Turn progression mapping:
-        # Turn 2 (Candidate's first reply) -> Transition to Resume Verification
-        # Turn 4 (Candidate's 2nd reply) -> Transition to Primary Competency
-        # Turn 6 (Candidate's 3rd reply) -> Transition to Secondary Competency
-        # Turn 8 (Candidate's 4th reply) -> Transition to Closing stage
-        # Turn 10+ -> Terminal Completed state
-
         if turn_number <= 2:
             # Stage: Resume & Experience Verification
             if resume_text:
@@ -207,6 +221,17 @@ class TurnOrchestrator:
             # Stage: Primary Competency Assessment
             comp = competencies[0] if competencies else None
             comp_name = comp.name if comp else "System Architecture & Scalability"
+            
+            # Check sufficiency of candidate's answer for primary competency
+            confidence = cls._evaluate_answer_confidence(candidate_text, comp)
+            if confidence < 0.70 and len(candidate_text.strip().split()) < 30:
+                # Dynamic targeted follow-up probe when confidence < 0.70
+                return (
+                    f"You touched on that, {candidate_name}. To ensure we capture sufficient evidence for {comp_name}, "
+                    f"could you elaborate specifically on the technical trade-offs, architecture patterns, or performance metrics you implemented?",
+                    False
+                )
+
             return (
                 f"That is very insightful. Focusing on {comp_name}, could you explain how you made "
                 f"key architectural decisions or handled performance bottlenecks in that system?",
@@ -217,6 +242,15 @@ class TurnOrchestrator:
             # Stage: Secondary Competency Assessment / Targeted Follow-up
             comp = competencies[1] if len(competencies) > 1 else (competencies[0] if competencies else None)
             comp_name = comp.name if comp else "Problem Solving & Reliability"
+            
+            confidence = cls._evaluate_answer_confidence(candidate_text, comp)
+            if confidence < 0.70 and len(candidate_text.strip().split()) < 30:
+                return (
+                    f"Understood, {candidate_name}. To thoroughly evaluate {comp_name}, could you describe a specific "
+                    f"high-severity bug or architecture dispute you navigated, and the root-cause analysis you performed?",
+                    False
+                )
+
             return (
                 f"Understood. Moving to {comp_name}: could you describe a specific production incident, "
                 f"challenging bug, or design conflict you had to resolve, and what steps you took?",

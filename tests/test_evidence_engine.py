@@ -112,3 +112,68 @@ async def test_evidence_and_decision_engine(evidence_test_db):
     arch_comp = report["competency_breakdown"]["System Architecture"]
     assert "FastAPI" in arch_comp["evidence_quote"]
     assert report["recommendation_narrative"] is not None
+
+def test_dynamic_followup_probing():
+    from backend.engine.orchestrator import TurnOrchestrator
+    comp = Competency(
+        id="c1", job_id="j1", name="System Architecture & Scalability",
+        description="Scalable distributed systems with caching and indexing",
+        rubric_json={"rubric": "High throughput microservices"}, weight=1.5
+    )
+
+    # 1. Vague / short response -> triggers targeted follow-up probe
+    vague_answer = "I worked on a backend."
+    probe_response, is_final = TurnOrchestrator._generate_adaptive_response(
+        candidate_text=vague_answer,
+        turn_number=3,
+        candidate_name="Elena",
+        job_title="Backend Lead",
+        stages=[],
+        competencies=[comp],
+        persona={},
+        resume_text="Senior engineer"
+    )
+    assert not is_final
+    assert "sufficient evidence" in probe_response.lower() or "elaborate" in probe_response.lower()
+
+    # 2. Detailed technical response -> moves forward without deficiency probe
+    thorough_answer = (
+        "We architected an asynchronous FastAPI microservice with asyncpg connection pooling, "
+        "Redis caching for hot reads, and composite B-tree indices on PostgreSQL reducing p99 latency to 12ms."
+    )
+    normal_response, _ = TurnOrchestrator._generate_adaptive_response(
+        candidate_text=thorough_answer,
+        turn_number=3,
+        candidate_name="Elena",
+        job_title="Backend Lead",
+        stages=[],
+        competencies=[comp],
+        persona={},
+        resume_text="Senior engineer"
+    )
+    assert "sufficient evidence" not in normal_response.lower()
+
+def test_rag_hallucination_guardrail():
+    policy_doc = (
+        "Zensar Engineering Code Review Policy:\n"
+        "All pull requests must receive approval from two senior peers within 24 hours. "
+        "Unit test coverage must exceed 85% with mandatory regression suites."
+    )
+    chunks = GroundedRAGEngine.chunk_document(policy_doc)
+    assert len(chunks) >= 1
+
+    # Grounded query
+    grounded_matches = GroundedRAGEngine.search_similar(
+        "What is the required pull request review SLA and unit test coverage threshold?",
+        chunks, top_k=1, threshold=0.30
+    )
+    assert len(grounded_matches) > 0
+    assert grounded_matches[0]["similarity"] >= 0.40
+
+    # Irrelevant query (unguarded hallucination probe)
+    irrelevant_matches = GroundedRAGEngine.search_similar(
+        "Can I claim reimbursement for scuba diving lessons during personal vacation?",
+        chunks, top_k=1, threshold=0.45
+    )
+    assert len(irrelevant_matches) == 0  # Gated by threshold, preventing hallucination
+

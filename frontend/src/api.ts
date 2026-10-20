@@ -79,4 +79,37 @@ export const api = {
       body: JSON.stringify(rawConfig),
     });
   },
+
+  // Evidence & Decision Engine
+  getEvidenceReports: async () => {
+    return apiRequest<any[]>('/evidence/reports');
+  },
+  getEvidenceReport: async (sessionId: string) => {
+    return apiRequest<any>(`/evidence/sessions/${sessionId}/report`);
+  },
+  evaluateSession: async (sessionId: string) => {
+    return apiRequest<any>(`/evidence/sessions/${sessionId}/evaluate`, { method: 'POST' });
+  },
+  signoffReport: async (reportId: string, status: string, notes: string) => {
+    return apiRequest<any>(`/evidence/reports/${reportId}/signoff`, {
+      method: 'POST',
+      body: JSON.stringify({ status, notes }),
+    });
+  },
+
+  // Interviews & Transcripts
+  getInterviewTranscript: async (sessionId: string) => {
+    return apiRequest<any[]>(`/interviews/${sessionId}/transcript`);
+  },
+
+  // Grounded Knowledge Base & RAG
+  getKnowledgeDocuments: async () => {
+    return apiRequest<any[]>('/knowledge/documents');
+  },
+  queryKnowledge: async (query: string, top_k: number = 3, threshold: number = 0.35) => {
+    return apiRequest<any>('/knowledge/query', {
+      method: 'POST',
+      body: JSON.stringify({ query, top_k, threshold }),
+    });
+  },
 };

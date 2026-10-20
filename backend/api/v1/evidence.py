@@ -42,6 +42,9 @@ async def get_session_report(
         except Exception:
             raise HTTPException(status_code=404, detail="Evaluation report not found.")
 
+    from backend.engine.resume_defender import ResumeDefender
+    resume_claims = ResumeDefender.extract_claims(report.session.resume_text)
+
     return {
         "report_id": report.id,
         "session_id": report.session_id,
@@ -50,6 +53,7 @@ async def get_session_report(
         "overall_score": report.overall_score,
         "evidence_sufficiency_ratio": report.evidence_sufficiency_ratio,
         "competency_breakdown": report.competency_scores_json,
+        "resume_claims": resume_claims,
         "recommendation_narrative": report.recommendation_narrative,
         "human_override_status": report.human_override_status,
         "is_finalized": report.is_finalized,

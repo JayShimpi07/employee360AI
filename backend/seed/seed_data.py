@@ -5,11 +5,13 @@ from backend.core.database import AsyncSessionLocal, init_db
 from backend.core.security import get_password_hash
 from backend.models.models import (
     User, WorkflowDefinition, WorkflowVersion, Job, Competency,
-    InterviewSession, TranscriptTurn, EvaluationReport
+    InterviewSession, TranscriptTurn, EvaluationReport,
+    KnowledgeDocument, DocumentChunk
 )
 from backend.models.enums import UserRole, WorkflowCategory, SessionStatus, TurnSpeaker
 from backend.engine.compiler import HRAgentCompiler
 from backend.engine.decision_engine import ProofCarryingDecisionEngine
+from backend.engine.rag import GroundedRAGEngine
 
 async def seed():
     print("Initializing database tables...")
@@ -287,6 +289,71 @@ async def seed():
                 # Generate evaluation report via the Decision Engine
                 await ProofCarryingDecisionEngine.generate_evaluation_report(demo_session.id, db)
                 print("Seeded Demo Candidate: Arjun Sharma with completed Evaluation Report")
+
+        # 4. Seed Grounded HR Knowledge Documents & Vector Chunks (Phase 3)
+        doc_res = await db.execute(select(KnowledgeDocument).where(KnowledgeDocument.title == "Zensar Engineering Handbook & Standards"))
+        if not doc_res.scalar_one_or_none():
+            handbook_doc = KnowledgeDocument(
+                title="Zensar Engineering Handbook & Standards",
+                category="ENGINEERING_POLICY",
+                source_filename="zensar_engineering_handbook.md",
+                version=1
+            )
+            db.add(handbook_doc)
+            await db.flush()
+
+            handbook_content = (
+                "Zensar Engineering Quality Standards:\n"
+                "1. Code Quality & Review SLAs: All pull requests must be reviewed by at least two senior peers within 24 hours. "
+                "Unit test coverage must exceed 85% with mandatory regression tests.\n"
+                "2. Asynchronous Architecture: High-throughput microservices must utilize non-blocking async/await I/O with connection pooling. "
+                "Any query exceeding 50ms in production must be profiled using EXPLAIN ANALYZE and tuned with composite B-tree indexes.\n"
+                "3. Observability & Auditing: All microservices must export OpenTelemetry traces, Prometheus metrics, and structured JSON logs "
+                "with correlation IDs."
+            )
+            chunks = GroundedRAGEngine.chunk_document(handbook_content, chunk_size=200, overlap=30)
+            for c in chunks:
+                emb = GroundedRAGEngine.generate_embedding(c["content"])
+                db.add(DocumentChunk(
+                    document_id=handbook_doc.id,
+                    chunk_index=c["chunk_index"],
+                    content=c["content"],
+                    embedding_json=emb,
+                    metadata_json={"source": "engineering_handbook", "category": "architecture"}
+                ))
+            print("Seeded Knowledge Document: Zensar Engineering Handbook with vector chunks")
+
+        pto_res = await db.execute(select(KnowledgeDocument).where(KnowledgeDocument.title == "Zensar Remote Work, Leaves & Benefits Policy"))
+        if not pto_res.scalar_one_or_none():
+            benefits_doc = KnowledgeDocument(
+                title="Zensar Remote Work, Leaves & Benefits Policy",
+                category="HR_BENEFITS",
+                source_filename="zensar_benefits_policy.md",
+                version=1
+            )
+            db.add(benefits_doc)
+            await db.flush()
+
+            benefits_content = (
+                "Zensar Global HR Leaves and Benefits Guidelines:\n"
+                "1. Paid Time Off (PTO): Full-time employees accrue 24 days of paid vacation per calendar year in addition to 12 national holidays. "
+                "Consecutive leaves exceeding 5 days require 2 weeks advance manager notification.\n"
+                "2. Hybrid & Remote Work: Engineers may work remotely up to 3 days per week with manager alignment. "
+                "A monthly tax-free home office utility stipend of $150 is provided.\n"
+                "3. Healthcare & Wellness: Comprehensive medical, dental, and vision insurance is covered 100% for employees, "
+                "along with unlimited access to mental health counseling and fitness wellness programs."
+            )
+            chunks = GroundedRAGEngine.chunk_document(benefits_content, chunk_size=200, overlap=30)
+            for c in chunks:
+                emb = GroundedRAGEngine.generate_embedding(c["content"])
+                db.add(DocumentChunk(
+                    document_id=benefits_doc.id,
+                    chunk_index=c["chunk_index"],
+                    content=c["content"],
+                    embedding_json=emb,
+                    metadata_json={"source": "benefits_policy", "category": "pto_wellness"}
+                ))
+            print("Seeded Knowledge Document: Zensar Remote Work & Benefits Policy with vector chunks")
 
         await db.commit()
         print("Database seed completed successfully!")
