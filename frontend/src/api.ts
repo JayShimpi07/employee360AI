@@ -1,4 +1,7 @@
-import { OnboardingTasksResponse, HRCaseItem, HarperChatResponse } from './types';
+import {
+  OnboardingTasksResponse, HRCaseItem, HarperChatResponse,
+  FairnessPersona, FairnessAuditResult, ResearchBenchmarksSummary, LiveLatencyAudit
+} from './types';
 
 const API_BASE = '/api/v1';
 
@@ -164,6 +167,23 @@ export const api = {
     return apiRequest<HarperChatResponse>('/employee/assistant/chat', {
       method: 'POST',
       body: JSON.stringify({ message }),
+    });
+  },
+
+  // Research Evaluation & Fairness Lab (Phase 6)
+  getFairnessPersonas: async () => {
+    return apiRequest<FairnessPersona[]>('/research/fairness/personas');
+  },
+  runFairnessAudit: async () => {
+    return apiRequest<FairnessAuditResult>('/research/fairness/run-audit', { method: 'POST' });
+  },
+  getResearchBenchmarksSummary: async () => {
+    return apiRequest<ResearchBenchmarksSummary>('/research/benchmarks/summary');
+  },
+  runLiveLatencyAudit: async (iterations: number = 5) => {
+    return apiRequest<LiveLatencyAudit>('/research/benchmarks/run-latency-audit', {
+      method: 'POST',
+      body: JSON.stringify({ iterations }),
     });
   },
 };

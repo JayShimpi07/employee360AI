@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, delete
 from backend.models.models import (
@@ -16,6 +16,48 @@ class EvidenceSufficiencyEngine:
     """
 
     SUFFICIENCY_THRESHOLD = 0.70
+
+    @classmethod
+    def evaluate_text_turn(
+        cls, candidate_answer: str, competency_name: str, rubric_description: str = "", expected_keywords: Optional[List[str]] = None
+    ) -> Dict[str, Any]:
+        """
+        Evaluates a single candidate text turn against competency rubrics without database overhead.
+        Used for dynamic probing and counterfactual fairness audit.
+        """
+        rubric_str = f"{competency_name}. {rubric_description} "
+        if expected_keywords:
+            rubric_str += " ".join(expected_keywords)
+
+        turn_text = candidate_answer.strip()
+        sim = GroundedRAGEngine.cosine_similarity(
+            GroundedRAGEngine.generate_embedding(rubric_str),
+            GroundedRAGEngine.generate_embedding(turn_text)
+        )
+
+        comp_terms = set(re.findall(r'\b[a-z]{4,}\b', rubric_str.lower()))
+        turn_terms = set(re.findall(r'\b[a-z]{4,}\b', turn_text.lower()))
+        overlap_ratio = len(comp_terms.intersection(turn_terms)) / max(len(comp_terms), 1)
+
+        blended_score = (sim * 0.6) + (overlap_ratio * 0.4)
+        confidence = round(min(1.0, max(0.0, blended_score * 1.8)), 2)
+
+        if confidence >= cls.SUFFICIENCY_THRESHOLD:
+            status = EvidenceStatus.SUPPORTED
+        elif confidence >= 0.40:
+            status = EvidenceStatus.PARTIAL
+        else:
+            status = EvidenceStatus.INSUFFICIENT
+
+        sentences = [s.strip() for s in re.split(r'[.!?]+', turn_text) if len(s.strip()) > 15]
+        citations = sentences[:2] if sentences else [turn_text]
+
+        return {
+            "confidence_score": confidence,
+            "evidence_status": status.value,
+            "citations": citations,
+            "quote": turn_text
+        }
 
     @classmethod
     async def evaluate_session_evidence(

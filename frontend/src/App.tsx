@@ -6,6 +6,7 @@ import { CandidateInterview } from './components/CandidateInterview';
 import { EvidenceDecisionCenter } from './components/EvidenceDecisionCenter';
 import { AdversarialProctoringLab } from './components/AdversarialProctoringLab';
 import { EmployeePortal } from './components/EmployeePortal';
+import { ResearchFairnessLab } from './components/ResearchFairnessLab';
 import { LoginModal } from './components/LoginModal';
 import { api, getStoredToken, setStoredToken } from './api';
 import { User } from './types';
@@ -13,7 +14,7 @@ import { User } from './types';
 export const App: React.FC = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isLoginOpen, setIsLoginOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee'>('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee' | 'research'>('dashboard');
   const [interviewToken, setInterviewToken] = useState<string>('');
   const [interviewEmail, setInterviewEmail] = useState<string>('');
 
@@ -65,6 +66,8 @@ export const App: React.FC = () => {
           <AdversarialProctoringLab />
         ) : activeTab === 'employee' ? (
           <EmployeePortal />
+        ) : activeTab === 'research' ? (
+          <ResearchFairnessLab />
         ) : (
           <CandidateInterview
             initialToken={interviewToken}

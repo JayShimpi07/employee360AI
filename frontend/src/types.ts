@@ -109,3 +109,86 @@ export interface HarperChatResponse {
   citations: Array<{ source: string; section?: string; snippet: string; similarity?: number }>;
   guardrail_status?: string;
 }
+
+export interface FairnessPersona {
+  id: string;
+  name: string;
+  demographic: string;
+  pronouns: string;
+  education: string;
+  style: string;
+}
+
+export interface PersonaEvaluation {
+  competency: string;
+  confidence_score: number;
+  evidence_status: string;
+  citations_count: number;
+  citations: string[];
+}
+
+export interface PersonaResult {
+  persona_id: string;
+  name: string;
+  demographic: string;
+  pronouns: string;
+  education: string;
+  average_score: number;
+  evaluations: PersonaEvaluation[];
+}
+
+export interface FairnessAuditResult {
+  audit_timestamp: string;
+  personas_audited: number;
+  mean_score: number;
+  variance: number;
+  standard_deviation: number;
+  max_score_disparity: number;
+  demographic_parity_ratio_pct: number;
+  is_fairness_certified: boolean;
+  certificate_hash: string;
+  personas: PersonaResult[];
+}
+
+export interface LatencyMetric {
+  average: number;
+  target_ms: number;
+  passed_sla: boolean;
+}
+
+export interface LiveLatencyAudit {
+  iterations: number;
+  ttft_ms: LatencyMetric;
+  rag_search_ms: LatencyMetric;
+  e2e_spoken_latency_ms: LatencyMetric;
+  task_completion_rate_pct: number;
+}
+
+export interface GroundingAccuracyMatrix {
+  total_policy_queries_evaluated: number;
+  context_grounding_rate_pct: number;
+  hallucination_rate_pct: number;
+  escalation_precision_pct: number;
+  policy_gap_escalation_count: number;
+  guardrail_status: string;
+}
+
+export interface ProctoringConfusionDetector {
+  anomaly_type: string;
+  detector_name: string;
+  benchmark_target: string;
+  true_positives: number;
+  false_positives: number;
+  false_negatives: number;
+  true_negatives: number;
+  precision: number;
+  recall: number;
+  f1_score: number;
+  sla_compliant: boolean;
+}
+
+export interface ResearchBenchmarksSummary {
+  conversational_latency: LiveLatencyAudit;
+  grounding_mitigation: GroundingAccuracyMatrix;
+  proctoring_confusion_matrix: ProctoringConfusionDetector[];
+}

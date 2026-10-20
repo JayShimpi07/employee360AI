@@ -5,8 +5,8 @@ interface NavbarProps {
   currentUser: User | null;
   onOpenLogin: () => void;
   onLogout: () => void;
-  activeTab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee';
-  setActiveTab: (tab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee') => void;
+  activeTab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee' | 'research';
+  setActiveTab: (tab: 'dashboard' | 'studio' | 'interview' | 'evidence' | 'lab' | 'employee' | 'research') => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -173,6 +173,23 @@ export const Navbar: React.FC<NavbarProps> = ({
           }}
         >
           Employee Portal 💼
+        </button>
+        <button
+          onClick={() => setActiveTab('research')}
+          style={{
+            background: activeTab === 'research' ? '#ffffff' : 'transparent',
+            color: activeTab === 'research' ? 'var(--accent-primary)' : 'var(--text-muted)',
+            border: activeTab === 'research' ? '1px solid #e2e8f0' : '1px solid transparent',
+            borderRadius: '6px',
+            padding: '7px 16px',
+            fontWeight: activeTab === 'research' ? 700 : 500,
+            fontSize: '0.85rem',
+            cursor: 'pointer',
+            boxShadow: activeTab === 'research' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          Research Lab 🔬
         </button>
       </div>
 
