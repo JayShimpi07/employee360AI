@@ -113,3 +113,28 @@ async def complete_interview_session(
         "status": session.status.value,
         "completed_at": session.completed_at.isoformat()
     }
+
+@router.delete("/{session_id}")
+async def delete_interview_session(
+    session_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Deletes a specific interview session and all associated data.
+    """
+    from backend.models.models import ProctoringEvent, TranscriptTurn, EvaluationReport
+    from sqlalchemy import delete
+
+    res = await db.execute(select(InterviewSession).where(InterviewSession.id == session_id))
+    session = res.scalar_one_or_none()
+    if not session:
+        raise HTTPException(status_code=404, detail="Interview session not found.")
+
+    await db.execute(delete(EvaluationReport).where(EvaluationReport.session_id == session_id))
+    await db.execute(delete(TranscriptTurn).where(TranscriptTurn.session_id == session_id))
+    await db.execute(delete(ProctoringEvent).where(ProctoringEvent.session_id == session_id))
+    await db.execute(delete(InterviewSession).where(InterviewSession.id == session_id))
+    await db.commit()
+
+    return {"success": True, "message": "Interview session deleted successfully."}
+

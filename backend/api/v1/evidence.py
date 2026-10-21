@@ -116,6 +116,32 @@ async def reviewer_signoff(
         "reviewer": current_user.full_name
     }
 
+@router.delete("/reports/{report_id}")
+async def delete_report(
+    report_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Deletes a specific candidate evaluation report and associated session records.
+    """
+    from backend.models.models import ProctoringEvent, TranscriptTurn
+    from sqlalchemy import delete
+
+    res = await db.execute(select(EvaluationReport).where(EvaluationReport.id == report_id))
+    report = res.scalar_one_or_none()
+    if not report:
+        raise HTTPException(status_code=404, detail="Evaluation report not found.")
+
+    session_id = report.session_id
+    await db.execute(delete(EvaluationReport).where(EvaluationReport.id == report_id))
+    if session_id:
+        await db.execute(delete(TranscriptTurn).where(TranscriptTurn.session_id == session_id))
+        await db.execute(delete(ProctoringEvent).where(ProctoringEvent.session_id == session_id))
+        await db.execute(delete(InterviewSession).where(InterviewSession.id == session_id))
+
+    await db.commit()
+    return {"success": True, "message": "Candidate evaluation report and session deleted successfully."}
+
 @router.post("/cleanup-test-data")
 async def cleanup_test_data(
     db: AsyncSession = Depends(get_db)
