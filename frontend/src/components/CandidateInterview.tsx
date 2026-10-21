@@ -189,6 +189,17 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
     }
   };
 
+  const handleDeleteInvite = async (sessionId: string, candidateName: string) => {
+    if (!confirm(`Are you sure you want to delete the interview session for ${candidateName}?`)) return;
+    try {
+      await api.deleteInterviewSession(sessionId);
+      setRecentInvites((prev) => prev.filter((i) => i.session_id !== sessionId));
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete interview session.');
+    }
+  };
+
+
 
   // 2. Hardware Permissions & Audio Visualizer
   const startHardwareCheck = async () => {
@@ -546,10 +557,44 @@ export const CandidateInterview: React.FC<CandidateInterviewProps> = ({
                         {inv.candidate_email}
                       </div>
                     </div>
-                    <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>
-                      {inv.job_title} &bull; Enter &rarr;
-                    </span>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                      <span className="badge badge-indigo" style={{ fontSize: '0.72rem' }}>
+                        {inv.job_title} &bull; Enter &rarr;
+                      </span>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDeleteInvite(inv.session_id, inv.candidate_name);
+                        }}
+                        title={`Delete interview session for ${inv.candidate_name}`}
+                        style={{
+                          background: 'none',
+                          border: 'none',
+                          cursor: 'pointer',
+                          color: '#94a3b8',
+                          padding: '2px 4px',
+                          borderRadius: '4px',
+                          fontSize: '0.82rem',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'all 0.15s ease'
+                        }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.color = '#dc2626';
+                          e.currentTarget.style.background = '#fee2e2';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.color = '#94a3b8';
+                          e.currentTarget.style.background = 'none';
+                        }}
+                      >
+                        🗑️
+                      </button>
+                    </div>
                   </button>
+
                 ))}
               </div>
             </div>

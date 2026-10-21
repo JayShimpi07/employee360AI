@@ -104,12 +104,18 @@ export const api = {
   cleanupTestData: async () => {
     return apiRequest<any>('/evidence/cleanup-test-data', { method: 'POST' });
   },
-
+  deleteEvidenceReport: async (reportId: string) => {
+    return apiRequest<any>(`/evidence/reports/${reportId}`, { method: 'DELETE' });
+  },
 
   // Interviews & Transcripts
   getInterviewTranscript: async (sessionId: string) => {
     return apiRequest<any[]>(`/interviews/${sessionId}/transcript`);
   },
+  deleteInterviewSession: async (sessionId: string) => {
+    return apiRequest<any>(`/interviews/${sessionId}`, { method: 'DELETE' });
+  },
+
 
   // Grounded Knowledge Base & RAG
   getKnowledgeDocuments: async () => {

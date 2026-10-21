@@ -58,6 +58,20 @@ export const EvidenceDecisionCenter: React.FC<EvidenceDecisionCenterProps> = ({ 
     }
   };
 
+  const handleDeleteReport = async (reportId: string, candidateName: string) => {
+    if (!confirm(`Are you sure you want to delete the evaluation report and session for ${candidateName}?`)) return;
+    try {
+      await api.deleteEvidenceReport(reportId);
+      if (selectedReport?.report_id === reportId) {
+        setSelectedReport(null);
+      }
+      loadReports();
+    } catch (err: any) {
+      alert(err.message || 'Failed to delete report.');
+    }
+  };
+
+
   const loadKnowledgeDocs = async () => {
     try {
       setLoadingDocs(true);
@@ -234,13 +248,46 @@ export const EvidenceDecisionCenter: React.FC<EvidenceDecisionCenterProps> = ({ 
                     >
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
                         <span style={{ fontWeight: 700, fontSize: '0.92rem', color: 'var(--text-main)' }}>{r.candidate_name}</span>
-                        <span style={{
-                          fontWeight: 800,
-                          fontSize: '1rem',
-                          color: r.overall_score >= 75 ? '#16a34a' : r.overall_score >= 50 ? '#d97706' : '#dc2626'
-                        }}>
-                          {r.overall_score}%
-                        </span>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{
+                            fontWeight: 800,
+                            fontSize: '1rem',
+                            color: r.overall_score >= 75 ? '#16a34a' : r.overall_score >= 50 ? '#d97706' : '#dc2626'
+                          }}>
+                            {r.overall_score}%
+                          </span>
+                          <button
+                            type="button"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteReport(r.report_id, r.candidate_name);
+                            }}
+                            title={`Delete evaluation report for ${r.candidate_name}`}
+                            style={{
+                              background: 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              color: '#94a3b8',
+                              padding: '2px 4px',
+                              borderRadius: '4px',
+                              fontSize: '0.82rem',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              transition: 'all 0.15s ease'
+                            }}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.color = '#dc2626';
+                              e.currentTarget.style.background = '#fee2e2';
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.color = '#94a3b8';
+                              e.currentTarget.style.background = 'none';
+                            }}
+                          >
+                            🗑️
+                          </button>
+                        </div>
                       </div>
                       <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)', marginBottom: '8px' }}>
                         {r.job_title}

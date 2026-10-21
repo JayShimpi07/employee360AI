@@ -3,11 +3,11 @@ import { api } from '../api';
 import { Job, SystemStats, InviteCandidateResponse } from '../types';
 
 interface DashboardProps {
-  onOpenStudio: () => void;
+  onOpenStudio?: () => void;
   onStartInterview?: (token: string, email: string) => void;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInterview }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ onStartInterview }) => {
   const [stats, setStats] = useState<SystemStats | null>(null);
   const [jobs, setJobs] = useState<Job[]>([]);
   const [loading, setLoading] = useState(true);
@@ -21,21 +21,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInter
   const [inviting, setInviting] = useState(false);
   const [inviteResult, setInviteResult] = useState<InviteCandidateResponse | null>(null);
   const [isGuideOpen, setIsGuideOpen] = useState(false);
-  const [cleaning, setCleaning] = useState(false);
 
-  const handleCleanTestData = async () => {
-    if (!confirm('This will remove automated test runner entries and temporary duplicate candidates to keep your dashboard clean. Proceed?')) return;
-    try {
-      setCleaning(true);
-      const res = await api.cleanupTestData();
-      alert(res.message || 'Cleaned test data successfully!');
-      loadData();
-    } catch (err: any) {
-      alert(err.message || 'Cleanup failed');
-    } finally {
-      setCleaning(false);
-    }
-  };
 
 
   useEffect(() => {
@@ -90,30 +76,43 @@ export const Dashboard: React.FC<DashboardProps> = ({ onOpenStudio, onStartInter
             Autonomous employee lifecycle orchestration, competency rubrics, and proof-carrying interview reports.
           </p>
         </div>
-        <div style={{ display: 'flex', gap: '10px', alignItems: 'center', flexWrap: 'wrap' }}>
+        <div>
           <button
-            className="btn-secondary"
+            type="button"
             onClick={() => setIsGuideOpen(true)}
-            style={{ display: 'flex', alignItems: 'center', gap: '6px', fontWeight: 600, color: '#2563eb' }}
+            title="System Architecture & Feature Guide"
+            style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              border: '1px solid #cbd5e1',
+              background: '#ffffff',
+              color: '#334155',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.05rem',
+              fontWeight: 800,
+              transition: 'all 0.15s ease',
+              boxShadow: '0 1px 3px rgba(0,0,0,0.06)',
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.color = '#2563eb';
+              e.currentTarget.style.borderColor = '#2563eb';
+              e.currentTarget.style.background = '#eff6ff';
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.color = '#334155';
+              e.currentTarget.style.borderColor = '#cbd5e1';
+              e.currentTarget.style.background = '#ffffff';
+            }}
+            aria-label="Help and Feature Guide"
           >
-            📖 System Feature Guide
-          </button>
-          <button
-            className="btn-secondary"
-            onClick={handleCleanTestData}
-            disabled={cleaning}
-            title="Clean duplicate automated test runner entries"
-            style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-          >
-            {cleaning ? 'Cleaning...' : '🧹 Clean Test Runs'}
-          </button>
-          <button className="btn-secondary" onClick={onOpenStudio}>
-            Workflow Studio
-          </button>
-          <button className="btn-primary" onClick={() => { setIsInviteOpen(true); setInviteResult(null); }}>
-            + Invite Candidate for AI Interview
+            ?
           </button>
         </div>
+
 
       </div>
 
